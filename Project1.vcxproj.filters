@@ -1,0 +1,376 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Shader File">
+      <UniqueIdentifier>{5018e275-df35-4235-abc0-aa3e9a954edf}</UniqueIdentifier>
+      <Extensions>hlsl;</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="ソース ファイル\Debug">
+      <UniqueIdentifier>{f8d4a54b-e86d-40c9-9b52-83c622e01207}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Debug">
+      <UniqueIdentifier>{7f1dc999-9575-4809-878e-cc50e336869f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\DirectX">
+      <UniqueIdentifier>{d5d6551d-b6e4-4c5d-94fc-6a3a2dfae687}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\DirectX">
+      <UniqueIdentifier>{699e4e27-174f-4812-8b05-37ca790831fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Draw Set">
+      <UniqueIdentifier>{2a981bb3-0283-4e86-9c43-cf1a53af67fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Draw Set">
+      <UniqueIdentifier>{537a0d16-8a78-42b2-b3ee-7db0c00c5f81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Draw Resource">
+      <UniqueIdentifier>{01f5472c-2498-4d81-91d0-87946dd77654}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Draw Resource">
+      <UniqueIdentifier>{41de7800-0864-40f5-89d5-e65f0535a70d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Tools">
+      <UniqueIdentifier>{e7171e4d-49e5-4c22-9ad5-2eb6da3b130a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Tools">
+      <UniqueIdentifier>{41da89c0-5f21-4ee0-bb0a-db1d7466a670}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Programe_Settings">
+      <UniqueIdentifier>{c6698044-73c8-4529-a490-7de6fcc78c89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Programe_Settings">
+      <UniqueIdentifier>{c648c996-ecfe-4fdb-b6e1-e6de672ec3f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Resource_Setting">
+      <UniqueIdentifier>{ae64fc37-07bc-479a-9cae-85a96160ab1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Resource_Setting">
+      <UniqueIdentifier>{8d005cd5-4a60-44e1-9043-2cdb37b211fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Game_Settings">
+      <UniqueIdentifier>{c2855863-c924-4c27-9b39-0590bbc46d19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Game_Settings">
+      <UniqueIdentifier>{341b0194-c422-4991-b768-4ea71f116c4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Debug\ImGUI">
+      <UniqueIdentifier>{9f28a51a-0604-43db-8f28-456ca58b3dde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Debug\ImGUI">
+      <UniqueIdentifier>{b96cae62-b1e7-4f9b-a700-e722e81c8472}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Program_Files\Tools\Collision.cpp">
+      <Filter>ソース ファイル\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Shader\Shader_Manager.cpp">
+      <Filter>Shader File</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Programe_Settings\system_timer.cpp">
+      <Filter>ソース ファイル\Programe_Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Programe_Settings\Billboard.cpp">
+      <Filter>ソース ファイル\Programe_Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Resource_Setting\Game_Texture.cpp">
+      <Filter>ソース ファイル\Resource_Setting</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Resource_Setting\Game_Model.cpp">
+      <Filter>ソース ファイル\Resource_Setting</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Debug_Resource\debug_text.cpp">
+      <Filter>ソース ファイル\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Debug_Resource\Debug_Collision.cpp">
+      <Filter>ソース ファイル\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Debug_Resource\debug_ostream.cpp">
+      <Filter>ソース ファイル\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\DirectX\WICTextureLoader11.cpp">
+      <Filter>ソース ファイル\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Draw_Set\Model.cpp">
+      <Filter>ソース ファイル\Draw Set</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Game_Settings\Player_Camera.cpp">
+      <Filter>ソース ファイル\Game_Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Draw_Resource\Cube.cpp">
+      <Filter>ソース ファイル\Draw Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Draw_Resource\Effect.cpp">
+      <Filter>ソース ファイル\Draw Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Draw_Resource\Game.cpp">
+      <Filter>ソース ファイル\Draw Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Draw_Resource\Game_UI.cpp">
+      <Filter>ソース ファイル\Draw Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Draw_Resource\Grid.cpp">
+      <Filter>ソース ファイル\Draw Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Draw_Resource\Mash_Field.cpp">
+      <Filter>ソース ファイル\Draw Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Draw_Resource\Player.cpp">
+      <Filter>ソース ファイル\Draw Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Main.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Debug_Resource\GUI_Manager.cpp">
+      <Filter>ソース ファイル\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Debug_Resource\ImGUI\imgui.cpp">
+      <Filter>ソース ファイル\Debug\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Debug_Resource\ImGUI\imgui_demo.cpp">
+      <Filter>ソース ファイル\Debug\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Debug_Resource\ImGUI\imgui_draw.cpp">
+      <Filter>ソース ファイル\Debug\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Debug_Resource\ImGUI\imgui_impl_dx11.cpp">
+      <Filter>ソース ファイル\Debug\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Debug_Resource\ImGUI\imgui_impl_win32.cpp">
+      <Filter>ソース ファイル\Debug\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Debug_Resource\ImGUI\imgui_tables.cpp">
+      <Filter>ソース ファイル\Debug\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Debug_Resource\ImGUI\imgui_widgets.cpp">
+      <Filter>ソース ファイル\Debug\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Draw_Set\Texture_Manager.cpp">
+      <Filter>ソース ファイル\Draw Set</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Resource_Setting\Game_Audio.cpp">
+      <Filter>ソース ファイル\Resource_Setting</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Programe_Settings\Audio_Manager.cpp">
+      <Filter>ソース ファイル\Programe_Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\DirectX\direct3d.cpp">
+      <Filter>ソース ファイル\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Programe_Settings\Game_Window.cpp">
+      <Filter>ソース ファイル\Programe_Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Game_Settings\Debug_Camera.cpp">
+      <Filter>ソース ファイル\Game_Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Draw_Resource\Bullet.cpp">
+      <Filter>ソース ファイル\Draw Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Draw_Set\Sprite_Animation.cpp">
+      <Filter>ソース ファイル\Draw Set</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Draw_Set\Sprite.cpp">
+      <Filter>ソース ファイル\Draw Set</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Programe_Settings\keyboard.cpp">
+      <Filter>ソース ファイル\Programe_Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Programe_Settings\KeyLogger.cpp">
+      <Filter>ソース ファイル\Programe_Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Programe_Settings\mouse.cpp">
+      <Filter>ソース ファイル\Programe_Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Tools\Fade.cpp">
+      <Filter>ソース ファイル\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="Program_Files\Tools\System_Logic_Manager.cpp">
+      <Filter>ソース ファイル\Tools</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Program_Files\Tools\Collision.h">
+      <Filter>ヘッダー ファイル\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Tools\Palette.h">
+      <Filter>ヘッダー ファイル\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Shader\Shader_Manager.h">
+      <Filter>Shader File</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Programe_Settings\system_timer.h">
+      <Filter>ヘッダー ファイル\Programe_Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Programe_Settings\Billboard.h">
+      <Filter>ヘッダー ファイル\Programe_Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader_Billboard.h">
+      <Filter>Shader File</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Resource_Setting\Game_Texture.h">
+      <Filter>ヘッダー ファイル\Resource_Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Resource_Setting\Game_Model.h">
+      <Filter>ヘッダー ファイル\Resource_Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Debug_Resource\debug_text.h">
+      <Filter>ヘッダー ファイル\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Debug_Resource\Debug_Collision.h">
+      <Filter>ヘッダー ファイル\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Debug_Resource\debug_ostream.h">
+      <Filter>ヘッダー ファイル\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\DirectX\WICTextureLoader11.h">
+      <Filter>ヘッダー ファイル\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Set\Model.h">
+      <Filter>ヘッダー ファイル\Draw Set</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Settings\Player_Camera.h">
+      <Filter>ヘッダー ファイル\Game_Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Resource\Player.h">
+      <Filter>ヘッダー ファイル\Draw Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Resource\Cube.h">
+      <Filter>ヘッダー ファイル\Draw Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Resource\Effect.h">
+      <Filter>ヘッダー ファイル\Draw Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Resource\Game.h">
+      <Filter>ヘッダー ファイル\Draw Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Resource\Game_UI.h">
+      <Filter>ヘッダー ファイル\Draw Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Resource\Grid.h">
+      <Filter>ヘッダー ファイル\Draw Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Resource\Mash_Field.h">
+      <Filter>ヘッダー ファイル\Draw Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Debug_Resource\GUI_Manager.h">
+      <Filter>ヘッダー ファイル\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Debug_Resource\ImGUI\imstb_truetype.h">
+      <Filter>ヘッダー ファイル\Debug\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Debug_Resource\ImGUI\imconfig.h">
+      <Filter>ヘッダー ファイル\Debug\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Debug_Resource\ImGUI\imgui.h">
+      <Filter>ヘッダー ファイル\Debug\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Debug_Resource\ImGUI\imgui_impl_dx11.h">
+      <Filter>ヘッダー ファイル\Debug\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Debug_Resource\ImGUI\imgui_impl_win32.h">
+      <Filter>ヘッダー ファイル\Debug\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Debug_Resource\ImGUI\imgui_internal.h">
+      <Filter>ヘッダー ファイル\Debug\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Debug_Resource\ImGUI\imstb_rectpack.h">
+      <Filter>ヘッダー ファイル\Debug\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Debug_Resource\ImGUI\imstb_textedit.h">
+      <Filter>ヘッダー ファイル\Debug\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Set\Texture_Manager.h">
+      <Filter>ヘッダー ファイル\Draw Set</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Resource_Setting\Game_Audio.h">
+      <Filter>ヘッダー ファイル\Resource_Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Programe_Settings\Audio_Manager.h">
+      <Filter>ヘッダー ファイル\Programe_Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\DirectX\direct3d.h">
+      <Filter>ヘッダー ファイル\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Programe_Settings\Game_Window.h">
+      <Filter>ヘッダー ファイル\Programe_Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Game_Settings\Debug_Camera.h">
+      <Filter>ヘッダー ファイル\Game_Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Resource\Bullet.h">
+      <Filter>ヘッダー ファイル\Draw Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Set\Sprite_Animation.h">
+      <Filter>ヘッダー ファイル\Draw Set</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Draw_Set\Sprite.h">
+      <Filter>ヘッダー ファイル\Draw Set</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Programe_Settings\keyboard.h">
+      <Filter>ヘッダー ファイル\Programe_Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Programe_Settings\KeyLogger.h">
+      <Filter>ヘッダー ファイル\Programe_Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Programe_Settings\mouse.h">
+      <Filter>ヘッダー ファイル\Programe_Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Tools\Frame.h">
+      <Filter>ヘッダー ファイル\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Tools\Fade.h">
+      <Filter>ヘッダー ファイル\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Tools\System_Logic_Manager.h">
+      <Filter>ヘッダー ファイル\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Tools\Game_Header_Manager.h">
+      <Filter>ヘッダー ファイル\Tools</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="consolab_ascii_512.png">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ascii_texture_generator.py">
+      <Filter>リソース ファイル</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Program_Files\Shader\shader_pixel_2d.hlsl">
+      <Filter>Shader File</Filter>
+    </FxCompile>
+    <FxCompile Include="Program_Files\Shader\shader_pixel_3d.hlsl">
+      <Filter>Shader File</Filter>
+    </FxCompile>
+    <FxCompile Include="Program_Files\Shader\shader_pixel_field.hlsl">
+      <Filter>Shader File</Filter>
+    </FxCompile>
+    <FxCompile Include="Program_Files\Shader\shader_vertex_2d.hlsl">
+      <Filter>Shader File</Filter>
+    </FxCompile>
+    <FxCompile Include="Program_Files\Shader\shader_vertex_3d.hlsl">
+      <Filter>Shader File</Filter>
+    </FxCompile>
+    <FxCompile Include="Program_Files\Shader\shader_pixel_Billboard.hlsl">
+      <Filter>Shader File</Filter>
+    </FxCompile>
+    <FxCompile Include="Program_Files\Shader\shader_vertex_Billboard.hlsl">
+      <Filter>Shader File</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>

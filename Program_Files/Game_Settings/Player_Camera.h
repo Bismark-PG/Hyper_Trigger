@@ -1,0 +1,39 @@
+/*==============================================================================
+
+	Make Camera [Camera.h]
+
+	Author : Choi HyungJoon
+
+==============================================================================*/
+#ifndef PLAYER_CAMERA_H
+#define PLAYER_CAMERA_H
+
+#include <DirectXMath.h>
+
+enum class Player_Sights
+{
+	Left,
+	Middle,
+	Right
+};
+
+void Player_Camera_Initialize();
+void Player_Camera_Finalize();
+
+void Player_Camera_Update(double elapsed_time);
+
+const DirectX::XMFLOAT3& Player_Camera_Get_POS();
+const DirectX::XMFLOAT3& Player_Camera_Get_Front();
+
+void Set_Mouse_Sensitivity(float Sensitivity);
+float Get_Mouse_Sensitivity();
+
+const DirectX::XMFLOAT3& Player_Camera_Get_Current_POS();
+float Player_Camera_Get_Yaw();
+float Player_Camera_Get_Pitch();
+
+Player_Sights Player_Camera_Get_Now_Sights();
+void Player_Camera_Update_Sights();
+void Player_Camera_Set_Now_Sights();
+
+#endif //PLAYER_CAMERA_H
