@@ -34,6 +34,8 @@ float Player_Camera_Get_Pitch();
 
 Player_Sights Player_Camera_Get_Now_Sights();
 void Player_Camera_Update_Sights();
-void Player_Camera_Set_Now_Sights();
+void Player_Camera_Change_Sights();
+
+DirectX::XMFLOAT4X4& PlayerCamera_GetViewMatrix();
 
 #endif //PLAYER_CAMERA_H

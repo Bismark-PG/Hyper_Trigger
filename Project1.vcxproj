@@ -108,7 +108,6 @@
     <ClInclude Include="Program_Files\Tools\Game_Header_Manager.h" />
     <ClInclude Include="Program_Files\Tools\Palette.h" />
     <ClInclude Include="Program_Files\Tools\System_Logic_Manager.h" />
-    <ClInclude Include="Shader_Billboard.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="consolab_ascii_512.png" />

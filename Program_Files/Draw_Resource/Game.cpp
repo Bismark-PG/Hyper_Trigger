@@ -72,7 +72,7 @@ void Game_Update(double elapsed_time)
 	if (KeyLogger_IsTrigger(KK_V) && !Is_Sights_Change)
 	{
 		Is_Sights_Change = true;
-		Player_Camera_Set_Now_Sights();
+		Player_Camera_Change_Sights();
 		Is_Sights_Change = false;
 	}
 

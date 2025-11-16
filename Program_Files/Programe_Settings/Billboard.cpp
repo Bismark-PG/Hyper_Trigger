@@ -10,12 +10,13 @@
 #include <DirectXMath.h>
 using namespace DirectX;
 #include "Texture_Manager.h"
-#include "Game_Texture.h"
 #include "Shader_Manager.h"
+#include <Player_Camera.h>
+#include <wrl/client.h>
 
 static constexpr int NUM_VERTEX = 4;
 
-static ID3D11Buffer* Vertex_Buffer = nullptr;
+static Microsoft::WRL::ComPtr<ID3D11Buffer> Vertex_Buffer = nullptr;
 
 struct Vertex_Billboard
 {
@@ -28,10 +29,10 @@ void Billboard_Initialize()
 {
 	static Vertex_Billboard Billboard[]
 	{
-		{{-0.5f, 0.5f,0.0f}, {1.0f,1.0f,1.0f,1.0f}, {0.0f, 0.0f}},
-		{{ 0.5f,-0.5f,0.0f}, {1.0f,1.0f,1.0f,1.0f}, {1.0f, 0.0f}},
-		{{-0.5f,-0.5f,0.0f}, {1.0f,1.0f,1.0f,1.0f}, {0.0f, 1.0f}},
-		{{ 0.5f, 0.5f,0.0f}, {1.0f,1.0f,1.0f,1.0f}, {1.0f, 1.0f}}
+		{{-0.5f, 0.5f,0.0f}, {1.0f,1.0f,1.0f,1.0f}, {0.0f, 0.0f}}, // 0 : LU
+		{{ 0.5f, 0.5f,0.0f}, {1.0f,1.0f,1.0f,1.0f}, {1.0f, 0.0f}}, // 1 : RU
+		{{-0.5f,-0.5f,0.0f}, {1.0f,1.0f,1.0f,1.0f}, {0.0f, 1.0f}}, // 2 : LD
+		{{ 0.5f,-0.5f,0.0f}, {1.0f,1.0f,1.0f,1.0f}, {1.0f, 1.0f}}  // 3 : RD
 	};
 
 	// 頂点バッファ生成
@@ -44,39 +45,60 @@ void Billboard_Initialize()
 	D3D11_SUBRESOURCE_DATA sd{};
 	sd.pSysMem = Billboard;
 
-	Direct3D_GetDevice()->CreateBuffer(&bd, &sd, &Vertex_Buffer);
-}
+	Direct3D_GetDevice()->CreateBuffer(&bd, &sd, Vertex_Buffer.GetAddressOf());
+}	
 
 void Billboard_Finalize()
 {
-	SAFE_RELEASE(Vertex_Buffer);
+	Vertex_Buffer.Reset();
 }
 
-void Billboard_Draw(int Tex_ID, const DirectX::XMFLOAT3& pos, float Scale_X, float Scale_Y)
+void Billboard_Draw(int Tex_ID, const DirectX::XMFLOAT3& POS,
+	float Scale_X, float Scale_Y, const DirectX::XMFLOAT2& Pivot)
 {
-	// シェーダーを描画パイプラインに設定
-	Shader_M->Begin3D();
+	// Set UV
+	UV_Parameter UV = {};
+	UV.scale = { 0.2f, 0.5f };
+	UV.translation = { 0.2f * 3, 0.5f };
+	Shader_M->SetUVParameter(UV);
+	Shader_M->Begin_Billboard();
 
-	// Color Reset
+	// Set Color
 	Shader_M->SetDiffuseColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
+	// Set Texture
 	ID3D11ShaderResourceView* SRV = Texture_M->Get_Shader_Resource_View(Tex_ID);
-	Shader_M->SetTexture3D(SRV);
+	if (SRV)
+		Direct3D_GetContext()->PSSetShaderResources(0, 1, &SRV);
 
-	// 頂点バッファを描画パイプラインに設定
+	// Set Vertex Buffer
 	UINT stride = sizeof(Vertex_Billboard);
 	UINT offset = 0;
-	Direct3D_GetContext()->IASetVertexBuffers(0, 1, &Vertex_Buffer, &stride, &offset);
+	Direct3D_GetContext()->IASetVertexBuffers(0, 1, Vertex_Buffer.GetAddressOf(), &stride, &offset);
 
-	// プリミティブトポロジ設定
-	Direct3D_GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// Set Topology
+	Direct3D_GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	// 頂点シェーダーに座標変換行列を設定
+	// Set Offset
+	XMMATRIX Pivot_Offset = XMMatrixTranslation(-Pivot.x, -Pivot.y, 0.0f);
+
+	// Get Camera Rotation
+	XMFLOAT4X4 mtxCamera = PlayerCamera_GetViewMatrix();
+	mtxCamera._41 = mtxCamera._42 = mtxCamera._43 = 0.0f;
+
+	// Get Inverse_Matrix
+	XMMATRIX Inverse_mtx = XMMatrixTranspose(XMLoadFloat4x4(&mtxCamera));
+
+	// Get Scale And Translation
 	XMMATRIX Scale = XMMatrixScaling(Scale_X, Scale_Y, 1.0f);
-	XMMATRIX mtx = XMMatrixTranslation(pos.x, pos.y, pos.z);
+	XMMATRIX Trans = XMMatrixTranslation(POS.x + Pivot.x, POS.y + Pivot.y, POS.z);
 
-	Shader_M->SetWorldMatrix3D(Scale * mtx);
+	// Get Final mtx
+	XMMATRIX mtxWorld = Pivot_Offset * Scale * Inverse_mtx * Trans;
 
-	// Just Draw
+	// Set World mtx
+	Shader_M->SetWorldMatrix3D(mtxWorld);
+
+	// Draw
 	Direct3D_GetContext()->Draw(NUM_VERTEX, 0);
 }

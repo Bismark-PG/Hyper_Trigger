@@ -12,6 +12,7 @@
 #include "Player.h"       
 #include "KeyLogger.h"
 #include <algorithm>
+#include <debug_ostream.h>
 
 using namespace DirectX;
 
@@ -20,6 +21,7 @@ static float Camera_Pitch = 0.0f;
 static float Camera_Near_Z = 0.1f;
 static float Camera_Far_z = 100.0f;
 static float Camera_FOV = XMConvertToRadians(70.0f);
+static XMFLOAT4X4 Camera_View_mtx = {};
 
 static float Camera_Distance = 2.5f;
 static float Camera_Height = 1.0f;
@@ -27,6 +29,7 @@ static XMFLOAT3 Camera_POS   = {};
 static XMFLOAT3 Camera_Front = {};
 static Player_Sights Current_Sights = {};
 static float Camera_Sights_Offset = {};
+static float Is_Camera_Sights_Changed = false;
 
 static XMFLOAT3 Current_Camera_Pos = {};
 static float Mouse_Sensitivity = {};
@@ -48,7 +51,11 @@ void Player_Camera_Finalize()
 
 void Player_Camera_Update(double elapsed_time)
 {
-    Player_Camera_Update_Sights();
+    if (Is_Camera_Sights_Changed)
+    {
+        Player_Camera_Update_Sights();
+        Is_Camera_Sights_Changed = false;
+    }
 
     // Get Mouse Movement
     float mouseMoveX = KeyLogger_GetMouse_MoveX() * Mouse_Sensitivity;
@@ -84,6 +91,7 @@ void Player_Camera_Update(double elapsed_time)
 
     // Make View Matrix
     XMMATRIX mtxView = XMMatrixLookAtLH(finalCameraPos, finalTargetPos, { 0.0f,1.0f,0.0f });
+    XMStoreFloat4x4(&Camera_View_mtx, mtxView);
     Shader_M->SetViewMatrix3D(mtxView);
     XMStoreFloat3(&Current_Camera_Pos, finalCameraPos);
 
@@ -128,28 +136,49 @@ Player_Sights Player_Camera_Get_Now_Sights()
 
 void Player_Camera_Update_Sights()
 {
-    switch (Current_Sights)
+    Camera_Sights_Offset *= -1.0f;
+
+    if (Camera_Sights_Offset > 0.0f)
+        Current_Sights = Player_Sights::Left;
+    else if (Camera_Sights_Offset < 0.0f)
+        Current_Sights = Player_Sights::Right;
+
+#if defined(DEBUG) || defined(_DEBUG)
+    bool Debugging = false;
+    string s = {};
+
+    if (Debugging)
     {
-    case Player_Sights::Left:
-        Camera_Sights_Offset = -1.5f;
-        break;
-    case Player_Sights::Middle:
-        Camera_Sights_Offset = 0.0f;
-        break;
-    case Player_Sights::Right:
-        Camera_Sights_Offset = 1.5f;
-        break;
+        Current_Sights = Player_Sights::Left;
+
+        switch (Current_Sights)
+        {
+        case Player_Sights::Left:
+            Camera_Sights_Offset = -1.5f;
+            s = "Left";
+            break;
+        case Player_Sights::Middle:
+            Camera_Sights_Offset = 0.0f;
+            s = "Middle";
+            break;
+        case Player_Sights::Right:
+            Camera_Sights_Offset = 1.5f;
+            s = "Right";
+            break;
+        }
     }
+    Debug::D_Out << "Now Sights : " << s << std::endl;
+#endif
 }
 
-void Player_Camera_Set_Now_Sights()
+void Player_Camera_Change_Sights()
 {
-    int Amount = 1;
+    Is_Camera_Sights_Changed = true;
+}
 
-    if (Current_Sights == Player_Sights::Right)
-        Current_Sights = Player_Sights::Left;
-    else
-        static_cast<int>(Current_Sights) + Amount;
+DirectX::XMFLOAT4X4& PlayerCamera_GetViewMatrix()
+{
+    return Camera_View_mtx;
 }
 
 void Set_Mouse_Sensitivity(float Sensitivity)

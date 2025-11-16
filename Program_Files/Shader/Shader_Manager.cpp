@@ -48,6 +48,15 @@ bool Shader_Manager::Init(ID3D11Device* device, ID3D11DeviceContext* context)
     if (!loadPixelShader("Resource/Shader/shader_pixel_3d.cso", m_ps3D)) return false;
     if (!loadPixelShader("Resource/Shader/shader_pixel_field.cso", m_ps3D_Field)) return false;
 
+    // --- Initialize Billboard Shaders ---
+    D3D11_INPUT_ELEMENT_DESC layoutBillboard[] = {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    };
+    if (!loadVertexShader("Resource/Shader/shader_vertex_Billboard.cso", m_vsBillboard, m_ilBillboard, layoutBillboard, ARRAYSIZE(layoutBillboard))) return false;
+    if (!loadPixelShader("Resource/Shader/shader_pixel_Billboard.cso", m_psBillboard)) return false;
+
     // --- Create Constant Buffers ---
     D3D11_BUFFER_DESC cbDesc = {};
     cbDesc.ByteWidth = sizeof(XMFLOAT4X4);
@@ -108,6 +117,20 @@ bool Shader_Manager::Init(ID3D11Device* device, ID3D11DeviceContext* context)
     m_device->CreateSamplerState(&samplerDesc, &m_sampler_AnisoTropic);
 
     SetDiffuseColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+
+    // --- Create UV Patameter States ---
+    D3D11_BUFFER_DESC bd = {};
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bd.CPUAccessFlags = 0;
+    bd.ByteWidth = sizeof(UV_Parameter);
+
+    HRESULT hr = m_device->CreateBuffer(&bd, nullptr, m_cbBillboardUV.GetAddressOf());
+    if (FAILED(hr))
+    {
+        MessageBox(nullptr, "Failed to create UV constant buffer.", "Error", MB_OK);
+        return false;
+    }
 
     return true;
 }
@@ -270,6 +293,28 @@ void Shader_Manager::SetFieldTextures(ID3D11ShaderResourceView* texture0, ID3D11
 {
     ID3D11ShaderResourceView* textures[] = { texture0, texture1 };
     m_context->PSSetShaderResources(0, 2, textures);
+}
+
+void Shader_Manager::Begin_Billboard()
+{
+    m_context->VSSetShader(m_vsBillboard.Get(), nullptr, 0);
+    m_context->PSSetShader(m_psBillboard.Get(), nullptr, 0);
+
+    m_context->IASetInputLayout(m_ilBillboard.Get());
+
+    m_context->VSSetConstantBuffers(0, 1, m_cbWorld3D.GetAddressOf());        // VS b0 - World
+    m_context->VSSetConstantBuffers(1, 1, m_cbView3D.GetAddressOf());         // VS b1 - View
+    m_context->VSSetConstantBuffers(2, 1, m_cbProjection3D.GetAddressOf());   // VS b2 - Projection
+    m_context->VSSetConstantBuffers(3, 1, m_cbBillboardUV.GetAddressOf());    // VS b3 - UV
+
+    m_context->PSSetConstantBuffers(0, 1, m_cbDiffuseColorPS.GetAddressOf()); // PS b0 - Diffuse Color
+
+    m_context->PSSetSamplers(0, 1, m_sampler_Linear.GetAddressOf());
+}
+
+void Shader_Manager::SetUVParameter(const UV_Parameter& parameter)
+{
+    m_context->UpdateSubresource(m_cbBillboardUV.Get(), 0, nullptr, &parameter, 0, 0);
 }
 
 // PS b0 (Diffuse Color)

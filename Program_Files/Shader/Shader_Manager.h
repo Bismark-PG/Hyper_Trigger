@@ -10,7 +10,7 @@
 
 #include <d3d11.h>
 #include <DirectXMath.h>
-#include <wrl/client.h>
+#include <wrl/client.h> // ComPtr
 
 enum class Shader_Filter
 {
@@ -21,29 +21,35 @@ enum class Shader_Filter
 
 struct Directional_Light
 {
-    alignas(16) DirectX::XMFLOAT4 Direction;
-    alignas(16) DirectX::XMFLOAT4 Color;
+    DirectX::XMFLOAT4 Direction;
+    DirectX::XMFLOAT4 Color;
 };
 
 struct Specular_Light
 {
-    alignas(16) DirectX::XMFLOAT3 CameraPosition;
+    DirectX::XMFLOAT3 CameraPosition;
     float Power;
-    alignas(16) DirectX::XMFLOAT4 Color;
+    DirectX::XMFLOAT4 Color;
 };
 
 struct Point_Light
 {
-    alignas(16) DirectX::XMFLOAT3 Position;
+    DirectX::XMFLOAT3 Position;
     float Range;
-    alignas(16) DirectX::XMFLOAT4 Color;
+    DirectX::XMFLOAT4 Color;
 };
 
 struct Point_Light_Buffer
 {
     Point_Light point_light[4];
     int point_light_count;
-    alignas(16) DirectX::XMFLOAT3 dummy;
+    DirectX::XMFLOAT3 dummy;
+};
+
+struct UV_Parameter
+{
+    DirectX::XMFLOAT2 scale;
+    DirectX::XMFLOAT2 translation;
 };
 
 class Shader_Manager
@@ -64,7 +70,6 @@ public:
     void SetProjectionMatrix2D(const DirectX::XMMATRIX& matrix);
     void SetTexture2D(ID3D11ShaderResourceView* textureView);
 
-
     // --- Methods for 3D Shader ---
     void Begin3D(Shader_Filter Filter = Shader_Filter::ANISOTROPIC);
     void Begin3D_For_Field(Shader_Filter Filter = Shader_Filter::ANISOTROPIC);
@@ -74,6 +79,11 @@ public:
     void SetTexture3D(ID3D11ShaderResourceView* textureView);
     void SetFieldTextures(ID3D11ShaderResourceView* texture0, ID3D11ShaderResourceView* texture1); // For Multy Texture
 
+    // --- Methods for Billboard System ---
+    void Begin_Billboard();
+    void SetUVParameter(const UV_Parameter& parameter);
+
+    // Shader b0
     void SetDiffuseColor(const DirectX::XMFLOAT4& color);
     // Shader b1
     void SetLightAmbient(const DirectX::XMFLOAT4& color);
@@ -113,6 +123,12 @@ private:
     Microsoft::WRL::ComPtr<ID3D11InputLayout>  m_il3D;
     Microsoft::WRL::ComPtr<ID3D11PixelShader>  m_ps3D;
     Microsoft::WRL::ComPtr<ID3D11PixelShader>  m_ps3D_Field;      // Pixel Shader For Field
+
+    // --- Billboard Shader Resources ---
+    Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vsBillboard;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout>  m_ilBillboard;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader>  m_psBillboard;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>       m_cbBillboardUV;     // VS b3 for UV Parameter
 
     // --- Vertex Shader Resources ---
     Microsoft::WRL::ComPtr<ID3D11Buffer>       m_cbWorld3D;         // VS b0 for World

@@ -5,7 +5,6 @@
     Author : Choi HyungJoon
 
 ==============================================================================*/
-
 // b0: Diffuse Light
 cbuffer PS_CONSTANT_BUFFER : register(b0)
 {

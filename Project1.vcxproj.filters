@@ -82,9 +82,6 @@
     <ClCompile Include="Program_Files\Programe_Settings\system_timer.cpp">
       <Filter>ソース ファイル\Programe_Settings</Filter>
     </ClCompile>
-    <ClCompile Include="Program_Files\Programe_Settings\Billboard.cpp">
-      <Filter>ソース ファイル\Programe_Settings</Filter>
-    </ClCompile>
     <ClCompile Include="Program_Files\Resource_Setting\Game_Texture.cpp">
       <Filter>ソース ファイル\Resource_Setting</Filter>
     </ClCompile>
@@ -199,6 +196,9 @@
     <ClCompile Include="Program_Files\Tools\System_Logic_Manager.cpp">
       <Filter>ソース ファイル\Tools</Filter>
     </ClCompile>
+    <ClCompile Include="Program_Files\Programe_Settings\Billboard.cpp">
+      <Filter>ソース ファイル\Draw Set</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Program_Files\Tools\Collision.h">
@@ -212,12 +212,6 @@
     </ClInclude>
     <ClInclude Include="Program_Files\Programe_Settings\system_timer.h">
       <Filter>ヘッダー ファイル\Programe_Settings</Filter>
-    </ClInclude>
-    <ClInclude Include="Program_Files\Programe_Settings\Billboard.h">
-      <Filter>ヘッダー ファイル\Programe_Settings</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader_Billboard.h">
-      <Filter>Shader File</Filter>
     </ClInclude>
     <ClInclude Include="Program_Files\Resource_Setting\Game_Texture.h">
       <Filter>ヘッダー ファイル\Resource_Setting</Filter>
@@ -338,6 +332,9 @@
     </ClInclude>
     <ClInclude Include="Program_Files\Tools\Game_Header_Manager.h">
       <Filter>ヘッダー ファイル\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="Program_Files\Programe_Settings\Billboard.h">
+      <Filter>ヘッダー ファイル\Draw Set</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
