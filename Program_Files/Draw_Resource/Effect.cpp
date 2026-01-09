@@ -4,7 +4,7 @@
 
    Author : Choi HyungJoon
 
-==============================================================================*/
+================================================z==============================*/
 #include "Effect.h"
 #include <DirectXMath.h>
 using namespace DirectX;
@@ -34,7 +34,8 @@ void Effect_Initialize()
 		Eff.IS_Enable = false;
 	}
 
-	AniPatternID = SpriteAni_Get_Pattern_Info(Texture_M->GetID("Effect_White"), 16, 4, 0.01, {256, 256}, {0, 0}, false);
+	AniPatternID = SpriteAni_Get_Pattern_Info(Texture_Manager::GetInstance()->
+		GetID("Effect_White"), 16, 4, 0.01, {256, 256}, {0, 0}, false);
 }
 
 void Effect_Finalize()

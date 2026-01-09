@@ -15,4 +15,7 @@ void Game_Finalize();
 void Game_Update(double elapsed_time);
 void Game_Draw();
 
+bool Get_Debug_Mode_State();
+void Set_Debug_Mode_State(bool State);
+
 #endif // GAME_H

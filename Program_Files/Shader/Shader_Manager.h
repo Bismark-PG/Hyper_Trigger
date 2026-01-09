@@ -64,6 +64,9 @@ public:
     bool Init(ID3D11Device* device, ID3D11DeviceContext* context);
     void Final();
 
+    // --- Set Alpha ---
+    void SetAlphaBlend(bool enable);
+
     // --- Methods for 2D Shader ---
     void Begin2D(Shader_Filter Filter = Shader_Filter::MAG_MIP_POINT);
     void SetWorldMatrix2D(const DirectX::XMMATRIX& matrix);
@@ -111,6 +114,9 @@ private:
     ID3D11Device* m_device = nullptr;
     ID3D11DeviceContext* m_context = nullptr;
 
+    Microsoft::WRL::ComPtr<ID3D11BlendState> m_BlendStateAlpha;  // Alpha Blend
+    Microsoft::WRL::ComPtr<ID3D11BlendState> m_BlendStateOpaque; // No Blend
+
     // --- 2D Shader Resources ---
     Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vs2D;
     Microsoft::WRL::ComPtr<ID3D11InputLayout>  m_il2D;
@@ -150,8 +156,6 @@ private:
     Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_AnisoTropic;
 
 };
-
-extern Shader_Manager* Shader_M;
 
 #endif // SHADER_MANAGER_H
 

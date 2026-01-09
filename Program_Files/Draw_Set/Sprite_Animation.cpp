@@ -8,6 +8,7 @@
 #include "Sprite_Animation.h"
 #include "Sprite.h"
 #include "Texture_Manager.h"
+#include <debug_ostream.h>
 using namespace DirectX;
 
 struct AniPatternData
@@ -142,6 +143,50 @@ int SpriteAni_Get_Pattern_Info(int TexID, int PMax, int HPatternMax,
 	}
 
 	return -1; // If No More Space, Return -1
+}
+
+bool SpriteAni_Get_Current_UV(int PlayID, int& outTexID, DirectX::XMFLOAT2& outScale, DirectX::XMFLOAT2& outTrans)
+{
+	if (PlayID < 0 || PlayID >= ANI_PLAY_MAX || g_AniPlay[PlayID].PatternID < 0)
+	{
+		Debug::D_Out << "Failed To Get Current UV" << std::endl;
+		return false;
+	}
+
+	int Ani_Pattern_ID = g_AniPlay[PlayID].PatternID;
+	int Ani_Pattern_Num = g_AniPlay[PlayID].PatternNUM;
+	AniPatternData* pData = &g_AniPattern[Ani_Pattern_ID];
+
+	if (pData->TextureID < 0) return false;
+
+	// Return UV Info
+	outTexID = pData->TextureID;
+
+	// Get Texture Size
+	float Tex_W = static_cast<float>(Texture_Manager::GetInstance()->Get_Width(outTexID));
+	float Tex_H = static_cast<float>(Texture_Manager::GetInstance()->Get_Height(outTexID));
+
+	// Get UV Position
+	float px = static_cast<float>(pData->StartPosition.x
+		+ pData->PatternSize.x
+		* (Ani_Pattern_Num % pData->HorizonPatternMAX));
+
+	float py = static_cast<float>(pData->StartPosition.y
+		+ pData->PatternSize.y
+		* (Ani_Pattern_Num / pData->HorizonPatternMAX));
+
+	float pw = static_cast<float>(pData->PatternSize.x);
+	float ph = static_cast<float>(pData->PatternSize.y);
+
+	// UV Scale (Pattern Size / Texture Size)
+	outScale.x = pw / Tex_W;
+	outScale.y = ph / Tex_H;
+
+	// UV Translation (Position / Texture Size)
+	outTrans.x = px / Tex_W;
+	outTrans.y = py / Tex_H;
+
+	return true;
 }
 
 // Create Animation Player

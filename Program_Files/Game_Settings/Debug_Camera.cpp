@@ -168,8 +168,8 @@ void Debug_Camera_Update(double elapsed_time)
 
 	XMStoreFloat4x4(&Debug_Camera_Per_Mat, mtxPerspective);
 	// Set View MAT And Projection MAT In Shader
-	Shader_M->SetViewMatrix3D(View);
-	Shader_M->SetProjectionMatrix3D(mtxPerspective);
+	Shader_Manager::GetInstance()->SetViewMatrix3D(View);
+	Shader_Manager::GetInstance()->SetProjectionMatrix3D(mtxPerspective);
 
 	/*
 	// --- Note: Simplified Rotation Method ---
@@ -223,6 +223,11 @@ const DirectX::XMFLOAT3& Debug_Camera_Get_Horizon()
 	return Debug_Camera_Horizon;
 }
 
+void Debug_Camera_Set_FOV(float FOV)
+{
+	Debug_Camera_FOV = FOV;
+}
+
 float Debug_Camera_Get_FOV()
 {
 	return Debug_Camera_FOV;
@@ -242,4 +247,19 @@ void Debug_Camera_Set_Rotation(float Y, float P)
 {
 	Debug_Camera_Yaw = Y;
 	Debug_Camera_Pitch = P;
+}
+
+void Debug_Camera_Set_Front(const DirectX::XMFLOAT3& Front)
+{
+	Debug_Camera_Front = Front;
+}
+
+void Debug_Camera_Set_Vertical(const DirectX::XMFLOAT3& Vertical)
+{
+	Debug_Camera_Vertical = Vertical;
+}
+
+void Debug_Camera_Set_Horizon(const DirectX::XMFLOAT3& Horizon)
+{
+	Debug_Camera_Horizon = Horizon;
 }

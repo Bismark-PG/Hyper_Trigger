@@ -13,31 +13,28 @@
 #include <string>
 #include <unordered_map>
 #include "model.h"
-using namespace DirectX;
 
-class Game_Model
+class Model_Manager
 {
-private:
-    static Game_Model* m_Instance;
-
-    Game_Model() {}
-    ~Game_Model() {}
-
-    Game_Model(const Game_Model&) = delete;
-    Game_Model& operator=(const Game_Model&) = delete;
-
-    void Load(ID3D11Device* device, ID3D11DeviceContext* context);
-    void Clear();
-
 public:
-    static Game_Model* GetInstance();
+    static Model_Manager* GetInstance();
+
+    // Singleton Safety
+    Model_Manager(const Model_Manager&) = delete;
+    Model_Manager& operator=(const Model_Manager&) = delete;
 
     static void Init(ID3D11Device* device, ID3D11DeviceContext* context);
     static void Final();
 
+    void Load(ID3D11Device* device, ID3D11DeviceContext* context);
     static MODEL* GetModel(const std::string& name);
+
+private:
+    Model_Manager() = default;
+    ~Model_Manager() = default;
+
+    void Clear();
+
+    std::unordered_map<std::string, MODEL*> m_ModelDB;
 };
-
-extern Game_Model* Model_M;
-
 #endif // GAME_MODEL_H

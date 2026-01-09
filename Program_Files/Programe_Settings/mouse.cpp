@@ -34,9 +34,9 @@ static int                gRelativeX = INT32_MAX;
 static int                gRelativeY = INT32_MAX;
 static bool               gInFocus = true;
 
+static bool Debug_Mode = false;
 
 static void clipToWindow(void);
-
 
 void Mouse_Initialize(HWND window)
 {
@@ -353,6 +353,19 @@ void Mouse_ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         gState.x = gLastX = xPos;
         gState.y = gLastY = yPos;
     }
+}
+
+void Debug_Mode_Switcher()
+{
+	Debug_Mode = !Debug_Mode;
+}
+
+void Debug_Mode_Set()
+{
+	if (Debug_Mode)
+		Mouse_SetMode(MOUSE_POSITION_MODE_ABSOLUTE);
+    else
+        Mouse_SetMode(MOUSE_POSITION_MODE_RELATIVE);
 }
 
 void clipToWindow(void)

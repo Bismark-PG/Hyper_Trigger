@@ -27,10 +27,16 @@ const DirectX::XMFLOAT3& Debug_Camera_Get_POS();
 const DirectX::XMFLOAT3& Debug_Camera_Get_Front();
 const DirectX::XMFLOAT3& Debug_Camera_Get_Vertical();
 const DirectX::XMFLOAT3& Debug_Camera_Get_Horizon();
+
+void Debug_Camera_Set_FOV(float FOV);
 float Debug_Camera_Get_FOV();
 
 void Debug_Camera_Set_Position(float X, float Y, float Z);
 void Debug_Camera_Set_Position(const DirectX::XMFLOAT3& POS);
 void Debug_Camera_Set_Rotation(float Y, float P);
+
+void Debug_Camera_Set_Front(const DirectX::XMFLOAT3& Front);
+void Debug_Camera_Set_Vertical(const DirectX::XMFLOAT3& Vertical);
+void Debug_Camera_Set_Horizon(const DirectX::XMFLOAT3& Horizon);
 
 #endif //CAMERA_H

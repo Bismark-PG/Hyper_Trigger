@@ -13,10 +13,6 @@
 #include <assert.h>
 #include <mmsystem.h>
 #include <algorithm>
-
-// Reset Pointer
-Audio_Manager* Audio_Manager::Sound_Instance = nullptr;
-
 // SFX Lifetime Manager
 // If SFX Play Done, Destroy Voice
 class Audio_Manager::Voice_Callback : public IXAudio2VoiceCallback
@@ -61,10 +57,8 @@ private:
 // Singleton Instance Accessor
 Audio_Manager* Audio_Manager::GetInstance()
 {
-    if (Sound_Instance == nullptr)
-        Sound_Instance = new Audio_Manager();
-
-    return Sound_Instance;
+    static Audio_Manager instance;
+    return &instance;
 }
 
 // Creator / Extinction
@@ -90,13 +84,6 @@ void Audio_Manager::Init()
     // Prevent Multiple Initialization
     if (X_Audio) return;
 
-    HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-    if (FAILED(hr))
-    {
-        MessageBoxW(nullptr, L"Failed To Set Function Int Audio_Manager.cpp : [CoInitializeEx]", L">> FATAL ERROR <<", MB_OK | MB_ICONERROR);
-        PostQuitMessage(0);
-    }
-
     XAudio2Create(&X_Audio, 0);
     assert(X_Audio);
     X_Audio->CreateMasteringVoice(&m_pMasteringVoice);
@@ -111,13 +98,13 @@ void Audio_Manager::Final()
     if (!X_Audio) return;
 
     Stop_All_SFX();
+    Stop_BGM();
 
     // Unload All BGM
     for (auto const& Find : BGMs)
     {
         if (Find.second.Source)
         {
-            Find.second.Source->Stop();
             Find.second.Source->DestroyVoice();
         }
 
@@ -125,12 +112,13 @@ void Audio_Manager::Final()
     }
 
     BGMs.clear();
-
     Now_Playing_BGM_Name = "";
 
     // Unload All SFX
     for (auto const& Find : SFXs)
+    {
         delete[] Find.second.Data;
+    }
 
     SFXs.clear();
 

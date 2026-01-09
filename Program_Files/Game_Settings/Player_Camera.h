@@ -33,6 +33,7 @@ float Player_Camera_Get_Yaw();
 float Player_Camera_Get_Pitch();
 
 Player_Sights Player_Camera_Get_Now_Sights();
+void Player_Camera_Set_Sights(Player_Sights sight);
 void Player_Camera_Update_Sights();
 void Player_Camera_Change_Sights();
 

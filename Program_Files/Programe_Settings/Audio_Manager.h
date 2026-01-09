@@ -29,6 +29,10 @@ public:
     // Get Audio Manager Instance
     static Audio_Manager* GetInstance();
 
+    // Singleton Safety
+    Audio_Manager(const Audio_Manager&) = delete;
+    Audio_Manager& operator=(const Audio_Manager&) = delete;
+
     // Reset Audio Manager
     void Init();
     void Final();
@@ -67,16 +71,11 @@ public:
 private:
     Audio_Manager();
     ~Audio_Manager();
-    Audio_Manager(const Audio_Manager&) = delete;
-    Audio_Manager& operator=(const Audio_Manager&) = delete;
 
     bool Load_Wave_File(const char* pFilePath, Sound_Data& soundData);
 
-private:
-    static Audio_Manager* Sound_Instance;
-
-    IXAudio2* X_Audio;
-    IXAudio2MasteringVoice* m_pMasteringVoice;
+    IXAudio2* X_Audio = nullptr;
+    IXAudio2MasteringVoice* m_pMasteringVoice = nullptr;
 
     std::map<std::string, Sound_Data> BGMs;
     std::map<std::string, Sound_Data> SFXs;
@@ -84,20 +83,17 @@ private:
     std::vector<IXAudio2SourceVoice*> Active_SFX_Voices;
     std::mutex                        Voice_Mutex;
 
-    float Current_BGM_Volume;
-    float Target_BGM_Volume;
-    
-    float Target_SFX_Volume;
+    float Current_BGM_Volume = 0.5f;
+    float Target_BGM_Volume = 0.5f;
+    float Target_SFX_Volume = 0.5f;
 
     // Save Playing BGM Info
     std::string Now_Playing_BGM_Name;
 
     // Callback Handler for SFX
     class Voice_Callback;
-    Voice_Callback* Voice_Call_back;
+    Voice_Callback* Voice_Call_back = nullptr;
 };
-
-extern Audio_Manager* Sound_M;
 
 #endif // AUDIO_MANAGER_H
 

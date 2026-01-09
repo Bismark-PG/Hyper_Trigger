@@ -88,14 +88,14 @@ float4 main(PS_IN pi) : SV_TARGET
     float3 toEye = normalize(eye_posW - pi.posW.xyz);
     float3 r = reflect(directional_world_vector, normalW).xyz;
     float t = pow(max(dot(r, toEye), 0.0f), specular_power);
-    float3 specular = diffuse_color * t;
+    float3 specular = diffuse_color.rgb * t;
     
     //ç≈èIÉJÉâÅ[
     float3 color = ambient + diffuse + specular;
     
     for (int i = 0; i < pointlight_count; i++)
     {
-        float3 lightToPixel = pi.posW.xyz * point_light[i].posW;
+        float3 lightToPixel = point_light[i].posW - pi.posW.xyz;
         float D = length(pi.posW.xyz - point_light[i].posW);
         float A = pow(max(1.0f - 1.0f / point_light[i].range * D, 0.0f), 2.0f);
         

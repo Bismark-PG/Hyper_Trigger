@@ -103,7 +103,7 @@ bool Direct3D_Initialize(HWND hWnd)
 #if defined(DEBUG) || defined(_DEBUG)
 		MessageBox(hWnd, "Direct3Dの初期化に失敗しました", "エラー", MB_OK);
 #else
-		MessageBox(hWnd, "Direct3Dの初期化に失敗しました", "エラー", MB_OK);
+		MessageBox(hWnd, L"Direct3Dの初期化に失敗しました", L"エラー", MB_OK);
 #endif
 		return false;
 	}
@@ -113,7 +113,7 @@ bool Direct3D_Initialize(HWND hWnd)
 #if defined(DEBUG) || defined(_DEBUG)
 		MessageBox(hWnd, "バックバッファの設定に失敗しました", "エラー", MB_OK);
 #else
-		MessageBox(hWnd, "バックバッファの設定に失敗しました", "エラー", MB_OK);
+		MessageBox(hWnd, L"バックバッファの設定に失敗しました", L"エラー", MB_OK);
 #endif
 		return false;
 	}

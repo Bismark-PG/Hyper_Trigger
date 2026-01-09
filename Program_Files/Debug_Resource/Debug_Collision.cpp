@@ -24,7 +24,7 @@ void Debug_Collision_Initialize(ID3D11Device* device)
 
 	device->CreateRasterizerState(&desc, &Wire_Frame_State);
 
-	Debug_Texture_ID = Texture_M->GetID("TextSample");
+	Debug_Texture_ID = Texture_Manager::GetInstance()->GetID("TextSample");
 }
 
 void Debug_Collision_Finalize()
@@ -58,13 +58,15 @@ void Debug_Collision_Draw(const AABB& Collision, const DirectX::XMFLOAT4& color)
 	context->RSSetState(Wire_Frame_State);
 
 	// Set Shader Color
-	Shader_M->SetDiffuseColor(color);
-	Shader_M->SetTexture3D(Texture_M->Get_Shader_Resource_View(Debug_Texture_ID));
+	Shader_Manager::GetInstance()->SetDiffuseColor(color);
+	Shader_Manager::GetInstance()->SetTexture3D(Texture_Manager::GetInstance()->
+		Get_Shader_Resource_View(Debug_Texture_ID));
 
 	// Begin Shader
-	Shader_M->Begin3D(Shader_Filter::MAG_MIP_POINT); 
-	Shader_M->SetDiffuseColor(color);
-	Shader_M->SetTexture3D(Texture_M->Get_Shader_Resource_View(Debug_Texture_ID));
+	Shader_Manager::GetInstance()->Begin3D(Shader_Filter::MAG_MIP_POINT); 
+	Shader_Manager::GetInstance()->SetDiffuseColor(color);
+	Shader_Manager::GetInstance()->SetTexture3D(Texture_Manager::GetInstance()->
+		Get_Shader_Resource_View(Debug_Texture_ID));
 
 	Debug_Cube_Draw(world);
 

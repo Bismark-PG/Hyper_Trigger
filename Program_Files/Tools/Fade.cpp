@@ -7,7 +7,8 @@
 ==============================================================================*/
 #include "Fade.h"
 #include <iostream>
-#include <Game_Window.h>
+#include "Game_Window.h"
+#include "Shader_Manager.h"
 
 static int Fade_Texture = -1;
 
@@ -24,7 +25,7 @@ static bool IsDoneFadeOut = false;
 
 void Fade_Initialize(void)
 {
-	Fade_Texture = Texture_M->GetID("W");
+	Fade_Texture = Texture_Manager::GetInstance()->GetID("W");
 
     FadeTime = 1.0;
     FadeStartTime = 0.0;
@@ -65,7 +66,7 @@ void Fade_Update(double elapsed_time)
 #endif
     }
 
-    Fade_Alpha = (float)(State == FADE_STATE::FADE_IN ? 1.0 - Progress : Progress);
+    Fade_Alpha = static_cast<float>(State == FADE_STATE::FADE_IN ? 1.0 - Progress : Progress);
 
 #if defined(DEBUG) || defined(_DEBUG)
     OutputDebugStringA(Debug.str().c_str());
@@ -77,13 +78,19 @@ void Fade_Draw(void)
     if (State == FADE_STATE::NONE || State == FADE_STATE::FINISHED_IN)
           return;
 
+    Direct3D_SetDepthEnable(false);
+    Shader_Manager::GetInstance()->Begin2D();
+
+    float screenW = static_cast<float>(Window_Manager::GetInstance()->GetWidth());
+    float screenH = static_cast<float>(Window_Manager::GetInstance()->GetHeight());
+
     if (State == FADE_STATE::FINISHED_OUT)
     {
         if (!IsDoneFadeOut)
         {
             Palette F_Color = Color;
             F_Color.w = Fade_Alpha;
-            Sprite_Draw(Fade_Texture, 0.0f, 0.0f, static_cast<float>(Window_M->GetWidth()), static_cast<float>(Window_M->GetHeight()), {}, F_Color);
+            Sprite_Draw(Fade_Texture, 0.0f, 0.0f, screenW, screenH, {}, F_Color);
             IsDoneFadeOut = true;
         }
         return;
@@ -91,7 +98,13 @@ void Fade_Draw(void)
 
     Palette F_Color = Color;
     F_Color.w = Fade_Alpha;
-    Sprite_Draw(Fade_Texture, 0.0f, 0.0f, static_cast<float>(Window_M->GetWidth()), static_cast<float>(Window_M->GetHeight()), 0.0f, F_Color);
+    Sprite_Draw(Fade_Texture, 0.0f, 0.0f, screenW, screenH, {}, F_Color);
+
+    std::stringstream Debug;
+    Debug << "W" << screenW << std::endl;
+    Debug << "H" << screenH << std::endl;
+    Debug << "A" << Fade_Alpha << std::endl;
+    OutputDebugStringA(Debug.str().c_str());
 }
 
 // True = Fade Out, False = Fade In

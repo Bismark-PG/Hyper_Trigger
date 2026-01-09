@@ -66,7 +66,7 @@ void Sprite_Begin()
 	const float SCREEN_HEIGHT = (float)Direct3D_GetBackBufferHeight();
 
 	// 頂点シェーダーに変換行列を設定
-	Shader_M->SetProjectionMatrix2D(XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f));
+	Shader_Manager::GetInstance()->SetProjectionMatrix2D(XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f));
 }
 
 // Show All Texture (Can Change Size)
@@ -74,8 +74,8 @@ void Sprite_Draw(int Tex_ID, float dx, float dy, float dw, float dh, float angle
 {
 	if (Tex_ID < 0) return;
 
-	float Tex_Width  = static_cast<float>(Texture_M->Get_Width(Tex_ID));
-	float Tex_Height = static_cast<float>(Texture_M->Get_Height(Tex_ID));
+	float Tex_Width  = static_cast<float>(Texture_Manager::GetInstance()->Get_Width(Tex_ID));
+	float Tex_Height = static_cast<float>(Texture_Manager::GetInstance()->Get_Height(Tex_ID));
 
 	Sprite_UV_Draw(Tex_ID, dx, dy, dw, dh, 0.0f, 0.0f, Tex_Width, Tex_Height, angle, color);
 }
@@ -85,7 +85,7 @@ void Sprite_UV_Draw(int Tex_ID, float dx, float dy, float dw, float dh,
 	float px, float py, float pw, float ph, float angle, const DirectX::XMFLOAT4& color)
 {
 	// シェーダーを描画パイプラインに設定
-	Shader_M->Begin2D(Shader_Filter::MAG_MIP_LINEAR);
+	Shader_Manager::GetInstance()->Begin2D(Shader_Filter::MAG_MIP_LINEAR);
 
 	// 頂点バッファをロックする
 	D3D11_MAPPED_SUBRESOURCE msr;
@@ -106,8 +106,8 @@ void Sprite_UV_Draw(int Tex_ID, float dx, float dy, float dw, float dh,
 	v[3].color = color;
 
 	// Get Texture Size
-	float tw = static_cast<float>(Texture_M->Get_Width(Tex_ID));
-	float th = static_cast<float>(Texture_M->Get_Height(Tex_ID));
+	float tw = static_cast<float>(Texture_Manager::GetInstance()->Get_Width(Tex_ID));
+	float th = static_cast<float>(Texture_Manager::GetInstance()->Get_Height(Tex_ID));
 
 	// Set UV Size
 	float U0 = px / tw;
@@ -130,7 +130,7 @@ void Sprite_UV_Draw(int Tex_ID, float dx, float dy, float dw, float dh,
 	XMMATRIX Rotation = XMMatrixRotationZ(XMConvertToRadians(angle)); // Rotation
 	XMMATRIX Translation = XMMatrixTranslation(dx + (dw / 2), dy + (dh / 2), 0.0f); // 平行移動
 
-	Shader_M->SetWorldMatrix2D(Scale * Rotation * Translation);
+	Shader_Manager::GetInstance()->SetWorldMatrix2D(Scale * Rotation * Translation);
 
 	// Auto Reset
 	// If You Want Rotate Or Move Many Texture Use This In Main
@@ -145,8 +145,9 @@ void Sprite_UV_Draw(int Tex_ID, float dx, float dy, float dw, float dh,
 	g_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	// Setting Texture
-	ID3D11ShaderResourceView* srv = Texture_M->Get_Shader_Resource_View(Tex_ID);
-	Shader_M->SetTexture2D(srv);
+	ID3D11ShaderResourceView* srv = Texture_Manager::GetInstance()->
+		Get_Shader_Resource_View(Tex_ID);
+	Shader_Manager::GetInstance()->SetTexture2D(srv);
 
 	// ポリゴン描画命令発行
 	g_pContext->Draw(NUM_VERTEX, 0);

@@ -24,14 +24,14 @@ namespace Text
 	DebugText::DebugText(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, int fontTextureID, UINT screenWidth, UINT screenHeight)
 		: m_pDevice(pDevice), m_pContext(pContext), m_Scale(1.0f), m_OffsetX(0.0f), m_OffsetY(0.0f)
 	{
-		m_pTextureView = Texture_M->Get_Shader_Resource_View(fontTextureID);
+		m_pTextureView = Texture_Manager::GetInstance()->Get_Shader_Resource_View(fontTextureID);
 		if (!m_pTextureView)
 		{
 			MessageBoxW(nullptr, L"Font Texture View Load Failed.", L"DebugText Error", MB_OK | MB_ICONERROR);
 			return;
 		}
-		m_TextureWidth = Texture_M->Get_Width(fontTextureID);
-		m_TextureHeight = Texture_M->Get_Height(fontTextureID);
+		m_TextureWidth = Texture_Manager::GetInstance()->Get_Width(fontTextureID);
+		m_TextureHeight = Texture_Manager::GetInstance()->Get_Height(fontTextureID);
 
 		m_TextLines.emplace_back();
 

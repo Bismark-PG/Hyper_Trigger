@@ -28,9 +28,9 @@ static int UI_Ammo = -1;
 
 void Game_UI_Initialize()
 {
-	UI_Aim = Texture_M->GetID("Aim");
+	UI_Aim = Texture_Manager::GetInstance()->GetID("Aim");
 
-	UI_HP = Texture_M->GetID("HP");
+	UI_HP = Texture_Manager::GetInstance()->GetID("HP");
 
 	UI_Gum = -1;
 	UI_Ammo = -1;

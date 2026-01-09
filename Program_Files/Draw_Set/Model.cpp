@@ -32,7 +32,7 @@ MODEL* ModelLoad(const char* FileName, float scale, bool bBlender)
 {
 	if (g_TextureWhite == -1)
 	{
-		g_TextureWhite = Texture_M->GetID("TextSample");
+		g_TextureWhite = Texture_Manager::GetInstance()->GetID("TextSample");
 	}
 
 	MODEL* model = new MODEL;
@@ -46,8 +46,11 @@ MODEL* ModelLoad(const char* FileName, float scale, bool bBlender)
 		return nullptr;
 	}
 
-	model->VertexBuffer = new ID3D11Buffer * [model->AiScene->mNumMeshes];
-	model->IndexBuffer = new ID3D11Buffer * [model->AiScene->mNumMeshes];
+	model->Local_AABB.Min = { FLT_MAX, FLT_MAX, FLT_MAX };
+	model->Local_AABB.Max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+	model->VertexBuffer = new ID3D11Buffer * [model->AiScene->mNumMeshes]();
+	model->IndexBuffer = new ID3D11Buffer * [model->AiScene->mNumMeshes]();
 
 	// ===================================================================
 	// Loop for Index Mesh
@@ -61,14 +64,20 @@ MODEL* ModelLoad(const char* FileName, float scale, bool bBlender)
 		aiString textureName;
 		aimaterial->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
 
+		// Get Diffuse Color
 		XMFLOAT4 meshColor = { 1.0f, 1.0f, 1.0f, 1.0f };
-		if (textureName.length == 0)
+		aiColor3D diffuse(1.0f, 1.0f, 1.0f);
+
+		if (aimaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse) == AI_SUCCESS)
 		{
-			// Get Diffuse Color
-			aiColor3D diffuse;
-			if (aimaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse) == AI_SUCCESS)
+			// [Safety Fix] If Diffuse is Black(0,0,0), Force White
+			if (diffuse.r <= 0.01f && diffuse.g <= 0.01f && diffuse.b <= 0.01f)
 			{
-				meshColor = { diffuse.r, diffuse.g, diffuse.b, 1.0f }; //
+				meshColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+			}
+			else
+			{
+				meshColor = { diffuse.r, diffuse.g, diffuse.b, 1.0f };
 			}
 		}
 
@@ -142,20 +151,13 @@ MODEL* ModelLoad(const char* FileName, float scale, bool bBlender)
 			}
 
 			// Make AABB
-			if (v == 0)
-			{
-				model->Local_AABB.Min = vertex[v].position;
-				model->Local_AABB.Max = vertex[v].position;
-			}
-			else
-			{
-				model->Local_AABB.Min.x = std::min(model->Local_AABB.Min.x, vertex[v].position.x);
-				model->Local_AABB.Min.y = std::min(model->Local_AABB.Min.y, vertex[v].position.y);
-				model->Local_AABB.Min.z = std::min(model->Local_AABB.Min.z, vertex[v].position.z);
-				model->Local_AABB.Max.x = std::min(model->Local_AABB.Max.x, vertex[v].position.x);
-				model->Local_AABB.Max.y = std::min(model->Local_AABB.Max.y, vertex[v].position.y);
-				model->Local_AABB.Max.z = std::min(model->Local_AABB.Max.z, vertex[v].position.z);
-			}
+			model->Local_AABB.Min.x = std::min(model->Local_AABB.Min.x, vertex[v].position.x);
+			model->Local_AABB.Min.y = std::min(model->Local_AABB.Min.y, vertex[v].position.y);
+			model->Local_AABB.Min.z = std::min(model->Local_AABB.Min.z, vertex[v].position.z);
+
+			model->Local_AABB.Max.x = std::max(model->Local_AABB.Max.x, vertex[v].position.x);
+			model->Local_AABB.Max.y = std::max(model->Local_AABB.Max.y, vertex[v].position.y);
+			model->Local_AABB.Max.z = std::max(model->Local_AABB.Max.z, vertex[v].position.z);
 		}
 
 		// 頂点バッファ生成
@@ -234,10 +236,18 @@ MODEL* ModelLoad(const char* FileName, float scale, bool bBlender)
 				ID3D11Resource* resource = nullptr;
 
 				std::string sTexPath = texPath.C_Str();
-				std::replace(sTexPath.begin(), sTexPath.end(), '\\', '/');
+				size_t namePos = sTexPath.find_last_of("/\\");
+				if (namePos != std::string::npos)
+				{
+					sTexPath = sTexPath.substr(namePos + 1);
+				}
 
-				std::string texfilename = directory + sTexPath; // "Resource/Model/" + "textures/audi.png"
+				// Combine Directory + Filename
+				std::string texfilename = directory + sTexPath;
+				std::replace(texfilename.begin(), texfilename.end(), '\\', '/');
+				Debug::D_Out << "Loading Texture: " << texfilename << std::endl;
 
+				// WideChar Conversion
 				int len = MultiByteToWideChar(CP_UTF8, 0, texfilename.c_str(), -1, nullptr, 0);
 				wchar_t* pWideFilename = new wchar_t[len];
 				MultiByteToWideChar(CP_UTF8, 0, texfilename.c_str(), -1, pWideFilename, len);
@@ -258,6 +268,7 @@ MODEL* ModelLoad(const char* FileName, float scale, bool bBlender)
 				else
 				{
 					Debug::D_Out << "Failed to load external texture: " << texfilename.c_str() << std::endl;
+					// Keep nullptr, fallback handled in Draw
 					model->Texture[texPath.C_Str()] = nullptr;
 				}
 			}
@@ -269,32 +280,38 @@ MODEL* ModelLoad(const char* FileName, float scale, bool bBlender)
 
 void ModelRelease(MODEL* model)
 {
-	for (unsigned int m = 0; m < model->AiScene->mNumMeshes; m++)
+	if (!model) return;
+
+	if (model->AiScene)
 	{
-		SAFE_RELEASE(model->VertexBuffer[m]);
-		SAFE_RELEASE(model->IndexBuffer[m]);
+		for (unsigned int m = 0; m < model->AiScene->mNumMeshes; m++)
+		{
+			SAFE_RELEASE(model->VertexBuffer[m]);
+			SAFE_RELEASE(model->IndexBuffer[m]);
+		}
 	}
 
 	delete[] model->VertexBuffer;
 	delete[] model->IndexBuffer;
 
-
-	for (std::pair<const std::string, ID3D11ShaderResourceView*> pair : model->Texture)
+	if (model->AiScene)
 	{
-		SAFE_RELEASE(pair.second);
+		aiReleaseImport(model->AiScene);
+		model->AiScene = nullptr;
 	}
-
-
-	aiReleaseImport(model->AiScene);
-
 
 	delete model;
 }
 
 void ModelDraw(MODEL* model, const DirectX::XMMATRIX& mtxWorld)
 {
-	Shader_M->Begin3D();
-	Shader_M->SetWorldMatrix3D(mtxWorld);
+	if (!model) return;
+
+	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	Direct3D_GetContext()->OMSetBlendState(nullptr, blendFactor, 0xffffffff);
+
+	Shader_Manager::GetInstance()->Begin3D();
+	Shader_Manager::GetInstance()->SetWorldMatrix3D(mtxWorld);
 
 	// プリミティブトポロジ設定
 	Direct3D_GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -305,14 +322,20 @@ void ModelDraw(MODEL* model, const DirectX::XMMATRIX& mtxWorld)
 
 		// Get Diffuse Color And Opacity
 		aiColor4D diffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-		aimaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor);
+		if (aimaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor) == AI_SUCCESS)
+		{
+			if (diffuseColor.r < 0.01f && diffuseColor.g < 0.01f && diffuseColor.b < 0.01f)
+			{
+				diffuseColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+			}
+		}
 
 		float opacity = 1.0f;
 		aimaterial->Get(AI_MATKEY_OPACITY, opacity);
 		diffuseColor.a *= opacity;
 
 
-		//テクスチャの設定
+		// Get Texture
 		aiString texturePath;
 		aimaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath);
 
@@ -331,7 +354,7 @@ void ModelDraw(MODEL* model, const DirectX::XMMATRIX& mtxWorld)
 
 		if (!textureFound) // If Cant`t Find Texture And Load Failed
 		{
-			pTexture = Texture_M->Get_Shader_Resource_View(g_TextureWhite);
+			pTexture = Texture_Manager::GetInstance()->Get_Shader_Resource_View(g_TextureWhite);
 
 			// If No Texture DiffuseColor = White
 			diffuseColor.r = 1.0f;
@@ -341,8 +364,8 @@ void ModelDraw(MODEL* model, const DirectX::XMMATRIX& mtxWorld)
 		}
 
 		// Input Diffuse Color And Opacity To Shader
-		Shader_M->SetDiffuseColor(XMFLOAT4(diffuseColor.r, diffuseColor.g, diffuseColor.b, diffuseColor.a));
-		Shader_M->SetTexture3D(pTexture);
+		Shader_Manager::GetInstance()->SetDiffuseColor(XMFLOAT4(diffuseColor.r, diffuseColor.g, diffuseColor.b, diffuseColor.a));
+		Shader_Manager::GetInstance()->SetTexture3D(pTexture);
 
 		// 頂点バッファを描画パイプラインに設定
 		UINT stride = sizeof(Vertex3D);

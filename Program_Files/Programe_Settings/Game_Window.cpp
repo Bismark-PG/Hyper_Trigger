@@ -41,7 +41,11 @@ HWND Window_Manager::Init(HINSTANCE hInstance, int nCmdShow)
 
 	if (!RegisterClassEx(&wcex))
 	{
+#if defined(DEBUG) || defined(_DEBUG)
 		MessageBox(nullptr, "Window Class Registration Failed!", "Error", MB_OK | MB_ICONERROR);
+#else
+		MessageBox(nullptr, L"Window Class Registration Failed!", L"Error", MB_OK | MB_ICONERROR);
+#endif
 		return nullptr;
 	}
 
@@ -71,7 +75,11 @@ HWND Window_Manager::Init(HINSTANCE hInstance, int nCmdShow)
 
 	if (!m_hWnd)
 	{
+#if defined(DEBUG) || defined(_DEBUG)
 		MessageBox(nullptr, "Window Creation Failed!", "Error", MB_OK | MB_ICONERROR);
+#else
+		MessageBox(nullptr, L"Window Creation Failed!", L"Error", MB_OK | MB_ICONERROR);
+#endif
 		return nullptr;
 	}
 
@@ -144,17 +152,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			UINT Width = LOWORD(lParam);
 			UINT Height = HIWORD(lParam);
 
-			Window_M->HandleResize(Width, Height);
+			Window_Manager::GetInstance()->HandleResize(Width, Height);
 		}
 		break;
 
 	case WM_CLOSE:
-		Window_M->SetMessageBoxActive(true);
+		Window_Manager::GetInstance()->SetMessageBoxActive(true);
 
+#if defined(DEBUG) || defined(_DEBUG)
 		if (MessageBox(hWnd, "Really Want Exit Game?", "WARNING", MB_OKCANCEL) == IDOK)
+#else
+		if (MessageBox(hWnd, L"Really Want Exit Game?", L"WARNING", MB_OKCANCEL) == IDOK)
+#endif
 			DestroyWindow(hWnd);
 
-		Window_M->SetMessageBoxActive(false);
+		Window_Manager::GetInstance()->SetMessageBoxActive(false);
 		break;
 
 	case WM_DESTROY:

@@ -17,6 +17,7 @@ class Window_Manager
 public:
 	static Window_Manager* GetInstance();
 
+	// Singleton Safety
 	Window_Manager(const Window_Manager&) = delete;
 	Window_Manager& operator=(const Window_Manager&) = delete;
 
@@ -43,11 +44,14 @@ private:
 	UINT m_ScreenHeight = 1080;
 	bool m_IsMessageBoxOpen = false;
 
+#if defined(DEBUG) || defined(_DEBUG)
 	static constexpr char WINDOW_CLASS[] = "Hyper Trigger";
 	static constexpr char TITLE[] = "Hyper Trigger";
+#else
+	static constexpr wchar_t WINDOW_CLASS[] = L"Hyper Trigger";
+	static constexpr wchar_t TITLE[] = L"Hyper Trigger";
+#endif
 };
-
-extern Window_Manager* Window_M;
 
 extern float SCREEN_WIDTH;
 extern float SCREEN_HEIGHT;

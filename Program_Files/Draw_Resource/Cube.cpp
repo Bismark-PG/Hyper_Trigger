@@ -129,14 +129,14 @@ void Cube_Finalize(void)
 void Cube_Draw(XMMATRIX W_Matrix, Shader_Filter Filter, Cube_Type Type)
 {
 	// シェーダーを描画パイプラインに設定
-	Shader_M->Begin3D(Filter);
+	Shader_Manager::GetInstance()->Begin3D(Filter);
 
 	// Color Reset
-	Shader_M->SetDiffuseColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+	Shader_Manager::GetInstance()->SetDiffuseColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
 	// Texture_SetTexture(Cube_Tex_ID);
 	ID3D11ShaderResourceView* SRV = Get_Cube_Type(Type);
-	Shader_M->SetTexture3D(SRV);
+	Shader_Manager::GetInstance()->SetTexture3D(SRV);
 
 
 	// 頂点バッファを描画パイプラインに設定
@@ -153,7 +153,7 @@ void Cube_Draw(XMMATRIX W_Matrix, Shader_Filter Filter, Cube_Type Type)
 	g_pContext->IASetIndexBuffer(Index_Buffer, DXGI_FORMAT_R16_UINT, 0);
 
 	// 頂点シェーダーに座標変換行列を設定
-	Shader_M->SetWorldMatrix3D(W_Matrix);
+	Shader_Manager::GetInstance()->SetWorldMatrix3D(W_Matrix);
 
 	// Just Draw
 	// g_pContext->Draw(NUM_VERTEX, 0); 
@@ -178,7 +178,7 @@ void Debug_Cube_Draw(DirectX::XMMATRIX W_Matrix, Shader_Filter Filter)
 	g_pContext->IASetIndexBuffer(Index_Buffer, DXGI_FORMAT_R16_UINT, 0);
 
 	// 頂点シェーダーに座標変換行列を設定
-	Shader_M->SetWorldMatrix3D(W_Matrix);
+	Shader_Manager::GetInstance()->SetWorldMatrix3D(W_Matrix);
 
 	// Draw With Index
 	g_pContext->DrawIndexed(NUM_INDEX, 0, 0);
@@ -190,15 +190,33 @@ ID3D11ShaderResourceView* Get_Cube_Type(Cube_Type Type)
 
 	switch (Type)
 	{
-	case Cube_Type::BOX:
-		SRV = Texture_M->Get_Shader_Resource_View(Texture_M->GetID("Box_Sample"));
+	case Cube_Type::WALL:
+		SRV = Texture_Manager::GetInstance()->
+			Get_Shader_Resource_View(Texture_Manager::GetInstance()->GetID("Mash"));
 		break;
 
-	case Cube_Type::SAMPLE:
-		SRV = Texture_M->Get_Shader_Resource_View(Texture_M->GetID("Cube_Sample"));
+	case Cube_Type::SILDE:
+		SRV = Texture_Manager::GetInstance()->
+			Get_Shader_Resource_View(Texture_Manager::GetInstance()->GetID("Cube_Sample"));
+		break;	
+
+	case Cube_Type::BOX:
+		SRV = Texture_Manager::GetInstance()->
+			Get_Shader_Resource_View(Texture_Manager::GetInstance()->GetID("Box_Sample"));
 		break;
 	}
 	return SRV;
+}
+
+AABB Get_Cube_AABB(DirectX::XMFLOAT3& POS)
+{
+	float Collision = 0.5f;
+
+	return AABB
+	{
+		{ POS.x + Collision, POS.y + Collision, POS.z + Collision }, // Max
+		{ POS.x - Collision, POS.y - Collision, POS.z - Collision }  // Min
+	};
 }
 
 // Note

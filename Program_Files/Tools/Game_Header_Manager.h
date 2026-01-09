@@ -10,7 +10,7 @@
 
 //==============================================================================//
 // Include all necessary headers for the game manager
-// Programe Set
+// Program Set
 #include "Game_Window.h"
 #include "direct3d.h"
 #include "system_timer.h"
@@ -19,11 +19,14 @@
 
 // Shader Set
 #include "Shader_Manager.h"
+#include "Light_Manager.h"
 
 // Draw Set
 #include "Sprite.h"
 #include "Sprite_Animation.h"
 #include "Texture_Manager.h"
+#include "Billboard.h"
+#include "Billboard_Manager.h"
 
 // Resource Set
 #include "Game_Texture.h"
@@ -35,12 +38,22 @@
 #include "Player.h"
 #include "Player_Camera.h"
 #include "Mash_Field.h"
+#include "Game_Screen_Manager.h"
+#include "Update_Game.h"
+#include "Main_Menu.h"
 
 // Debug Set
 #include "debug_text.h"
 #include "Debug_Camera.h"
+#include "GUI_Manager.h"
+#include "Debug_Collision.h"
 
-// Athoer
+// Tools
+#include "Controller_Input.h"
+#include "Fade.h"
+#include "Main_Logic_Update.h"
+
+// Other
 #include <sstream>
 #include "Palette.h"
 

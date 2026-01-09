@@ -23,14 +23,17 @@ Texture_Manager* Texture_Manager::GetInstance()
 
 void Texture_Manager::Init(ID3D11Device* device, ID3D11DeviceContext* context)
 {
+    // Unconditional Initialization
     m_device = device;
     m_context = context;
-    Texture_Manager::Release_All();
+    Release_All(); // Clean start
 }
 
 void Texture_Manager::Final()
 {
-    Texture_Manager::Release_All();
+    Release_All();
+    m_device = nullptr;
+    m_context = nullptr;
 }
 
 void Texture_Manager::Release_All()

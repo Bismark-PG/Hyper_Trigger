@@ -18,20 +18,23 @@
 #include "Palette.h"
 #include "Model.h"
 #include "Game_Model.h"
-#include "Bullet.h"
-#include "Debug_Collision.h"
 #include "Game_UI.h"
 #include "Billboard.h"
 #include "Debug_Camera.h"
+#include "Map_System.h"
+#include "Sky.h"
+#include "Enemy.h"
+#include "Enemy_Manager.h"
+#include "Light_Manager.h"
+#include "Texture_Manager.h"
+#include "Billboard_Manager.h"
+#include "Bullet_Manager.h"
 using namespace DirectX;
 using namespace PALETTE;
 
 static XMFLOAT3 Player_First_POS = { 0.0f, 5.0f, -5.0f };
 
-static MODEL* CarModel = nullptr;
-static MODEL* BallModel = nullptr;
-
-static bool Is_Debug_Camera = false;
+static bool Is_Debug_Mode = false;
 static bool Is_Sights_Change = false;
 
 void Game_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -42,23 +45,22 @@ void Game_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	Grid_Initialize(pDevice, pContext);
 	Cube_Initialize(pDevice, pContext);
 	Mash_Field_Initialize(pDevice, pContext);
-	Billboard_Initialize();
+	Map_System_Initialize();
 
-	Debug_Camera_Initialize();
-	Debug_Collision_Initialize(pDevice);
+	Sky_Initialize();
+	Enemy_Manager::GetInstance().Init();
+
 	Game_UI_Initialize();
-
-	BallModel = Model_M->GetModel("ball");
-	CarModel = Model_M->GetModel("car");
 }
 
 void Game_Finalize()
 {
 	Game_UI_Finalize();
-	Debug_Collision_Finalize();
-	Debug_Camera_Finalize();
+	
+	Enemy_Manager::GetInstance().Final();
+	Sky_Finalize();
 
-	Billboard_Finalize();
+	Map_System_Finalize();
 	Mash_Field_Finalize();
 	Cube_Finalize();
 	Grid_Finalize();
@@ -78,77 +80,67 @@ void Game_Update(double elapsed_time)
 
 	if (KeyLogger_IsTrigger(KK_F1))
 	{
-		Is_Debug_Camera = !Is_Debug_Camera;
+		Is_Debug_Mode = !Is_Debug_Mode;
+
+		Debug_Mode_Switcher();
+		Debug_Mode_Set();
+
 		Debug_Camera_Set_Position(Player_Camera_Get_Current_POS());
 		Debug_Camera_Set_Rotation(Player_Camera_Get_Yaw(), Player_Camera_Get_Pitch());
 	}
 
-	if (Is_Debug_Camera)
+	if (Is_Debug_Mode)
 	{
 		Debug_Camera_Update(elapsed_time);
 	}
 	else
 	{
+		Light_Manager::GetInstance().Global_Light_Update(elapsed_time);
+
+		Map_System_Update(elapsed_time);
 		Player_Update(elapsed_time);
-		Bullet_Update(elapsed_time);
+		Bullet_Manager::Instance().Update(elapsed_time);
 		Player_Camera_Update(elapsed_time);
+
+		Sky_Update();
+		Enemy_Manager::GetInstance().Update(elapsed_time);
 	}
-
-	// --- Set Light ---
-	Shader_M->SetLightAmbient({ 0.1f, 0.1f, 0.1f, 1.0f });
-	Shader_M->SetLightDirectional({ 0.0f, -1.0f, 0.0f, 0.0f }, { 0.8f, 0.8f, 0.8f, 1.0f });
-	Shader_M->SetDiffuseColor(White);
-
-	// --- Point Light ---
-	Shader_M->SetPointLightCount(4);
-
-	XMFLOAT3 playerPos = Player_Get_POS();
-	playerPos.y += 1.0f;
-	Shader_M->SetPointLight(0, playerPos, 3.0f, { 1.0f, 0.5f, 0.0f, 1.0f });
-	Shader_M->SetPointLight(1, { 0.0f, 1.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f, 5.0f });
-	Shader_M->SetPointLight(2, { 1.5f, 1.0f, 0.0f }, 1.0f, { 0.0f, 1.0f, 0.0f, 5.0f });
-	Shader_M->SetPointLight(3, { 3.0f, 1.0f, 0.0f }, 1.0f, { 0.0f, 0.0f, 1.0f, 5.0f });
 }
 
 void Game_Draw()
 {
+	Light_Manager::GetInstance().Global_Light_Set_Up();
+
 	Direct3D_SetDepthEnable(true);
+	Shader_Manager::GetInstance()->Begin3D();
 
-	Mash_Field_Draw();
+	Sky_Draw();
+	Map_System_Draw();
 	Player_Draw();
-	Bullet_Draw();
-	Billboard_Draw(1, { -5.0f, 0.5f, -5.0f}, 1.0f, 1.0f);
 
-	if (CarModel)
-	{
-		XMMATRIX mtxRot = XMMatrixRotationZ(XMConvertToRadians(180));
-		XMMATRIX mtxCar_move = XMMatrixTranslation(-3.0f, 0.0f, 3.0f);
-		XMMATRIX mtxCar = mtxRot * mtxCar_move;
-		ModelDraw(CarModel, mtxCar);
-	}
+	Bullet_Manager::Instance().Draw();
+	Enemy_Manager::GetInstance().Draw();
 
-	XMMATRIX mtxWorld = XMMatrixIdentity();
-	Cube_Draw(mtxWorld, Shader_Filter::MAG_MIP_POINT);
-	mtxWorld = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
-	ModelDraw(BallModel, mtxWorld);
-
-	mtxWorld = XMMatrixTranslation(1.5f, 0.0f, 0.0f);
-	Cube_Draw(mtxWorld, Shader_Filter::MAG_MIP_LINEAR);
-	mtxWorld = XMMatrixTranslation(1.5f, 1.0f, 0.0f);
-	ModelDraw(BallModel, mtxWorld);
-
-	mtxWorld = XMMatrixTranslation(3.0f, 0.0f, 0.0f);
-	Cube_Draw(mtxWorld, Shader_Filter::ANISOTROPIC);
-	mtxWorld = XMMatrixTranslation(3.0f, 1.0f, 0.0f);
-	ModelDraw(BallModel, mtxWorld);
+	Shader_Manager::GetInstance()->SetAlphaBlend(true);
+	Billboard_Manager::Instance().Draw();
 
 	// Draw UI
-	if (!Is_Debug_Camera)
+	if (!Is_Debug_Mode)
 	{
 		Direct3D_SetDepthEnable(false);
-		Shader_M->Begin2D();
+		Shader_Manager::GetInstance()->Begin2D();
 		Game_UI_Draw();
 	}
+}
+
+bool Get_Debug_Mode_State()
+{
+	return Is_Debug_Mode;
+}
+
+void Set_Debug_Mode_State(bool State)
+{
+	Is_Debug_Mode = State;
 }
 
 // Make pyramid

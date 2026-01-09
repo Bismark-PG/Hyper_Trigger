@@ -52,12 +52,13 @@ VS_OUT main(VS_IN vi)
     //座標変換 (WVP)
     float4x4 mtxWV = mul(world, view); //ビュー変換
     float4x4 mtxWVP = mul(mtxWV, proj);
+    
     // プロジェクション変換
     vo.posH = mul(vi.posL, mtxWVP);
     
     // (Color and UV is same)
     vo.color = vi.color;
-    vo.texcoord = vi.texcoord * scale * translation;
+    vo.texcoord = (vi.texcoord * scale) + translation;
     
     return vo;
 }

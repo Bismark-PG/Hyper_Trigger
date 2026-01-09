@@ -6,45 +6,69 @@
 
 ==============================================================================*/
 #include "System_Logic_Manager.h"
+#include <Debug_Collision.h>
 
-void System_Initialize(HWND hWnd, ID3D11Device* Device, ID3D11DeviceContext* Context)
+void System_Manager::Initialize(HWND hWnd, ID3D11Device* Device, ID3D11DeviceContext* Context)
 {
 	// Initialize System Tools
 	SystemTimer_Initialize();
 	KeyLogger_Initialize(hWnd);
 
-	// Initialize Shader Tools
-	Shader_M = Shader_Manager::GetInstance();
-	Shader_M->Init(Device, Context);
-
-	// Initialize Texture Tools
-	Texture_M = Texture_Manager::GetInstance();
-	Texture_M->Init(Device, Context);
-	Game_Texture_Initialize();
-	Model_M->Init(Device, Context);
-	Sprite_Initialize(Device, Context);
-	SpriteAni_Initialize();
-
 	// Initialize Audio Tools
-	Sound_M = Audio_Manager::GetInstance();
-	Sound_M->Init();
+	Audio_Manager::GetInstance()->Init();
 	Game_Audio_Initialize();
 
+	// Initialize Shader Tools
+	Shader_Manager::GetInstance()->Init(Device, Context);
+	Light_Manager::GetInstance().Init();
+
+	// Initialize Texture Tools
+	Texture_Manager::GetInstance()->Init(Device, Context);
+	Game_Texture_Initialize();
+	Model_Manager::GetInstance()->Init(Device, Context);
+	Sprite_Initialize(Device, Context);
+	SpriteAni_Initialize();
+	Billboard_Initialize();
+	Billboard_Manager::Instance().Init();
+
 	// Initialize Game Setting Tools
-	Game_Initialize(Device, Context);
-	Mash_Field_Initialize(Device, Context);
+	Fade_Initialize();
+	Main_Logic_Initialize(Device, Context);
+
+	// Initialize Debug Tools
+	GUI_Init(hWnd, Device, Context);
+	Debug_Camera_Initialize();
+	Debug_Collision_Initialize(Device);
 }
 
-void System_Finalize()
+void System_Manager::Finalize()
 {
-	Mash_Field_Finalize();
+	// Finalize Debug Tools
+	Debug_Collision_Finalize();
+	Debug_Camera_Finalize();
+	GUI_Final();
+
+	// Finalize Game Setting Tools
+	Main_Logic_Finalize();
+	Fade_Finalize();
+
+	// Finalize Texture Tools
+	Billboard_Finalize();
+	Billboard_Manager::Instance().Final();
 	SpriteAni_Finalize();
 	Sprite_Finalize();
-	Model_M->Final();
+	Model_Manager::GetInstance()->Final();
 	Game_Texture_Finalize();
-	Texture_M->Final();
-	Shader_M->Final();
+	Texture_Manager::GetInstance()->Final();
+
+	// Finalize Shader Tools
+	Shader_Manager::GetInstance()->Final();
+
+	// Finalize Audio Tools
+	Game_Audio_Finalize();
+	Audio_Manager::GetInstance()->Final();
+
+	// Finalize System Tools
 	Direct3D_Finalize();
 	Mouse_Finalize();
-
 }

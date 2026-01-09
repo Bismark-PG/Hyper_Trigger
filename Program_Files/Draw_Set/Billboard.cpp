@@ -13,6 +13,7 @@ using namespace DirectX;
 #include "Shader_Manager.h"
 #include <Player_Camera.h>
 #include <wrl/client.h>
+#include "Sprite_Animation.h"
 
 static constexpr int NUM_VERTEX = 4;
 
@@ -29,10 +30,10 @@ void Billboard_Initialize()
 {
 	static Vertex_Billboard Billboard[]
 	{
-		{{-0.5f, 0.5f,0.0f}, {1.0f,1.0f,1.0f,1.0f}, {0.0f, 0.0f}}, // 0 : LU
-		{{ 0.5f, 0.5f,0.0f}, {1.0f,1.0f,1.0f,1.0f}, {1.0f, 0.0f}}, // 1 : RU
-		{{-0.5f,-0.5f,0.0f}, {1.0f,1.0f,1.0f,1.0f}, {0.0f, 1.0f}}, // 2 : LD
-		{{ 0.5f,-0.5f,0.0f}, {1.0f,1.0f,1.0f,1.0f}, {1.0f, 1.0f}}  // 3 : RD
+		{{-0.5f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}}, // 0 : LU
+		{{ 0.5f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}}, // 1 : RU
+		{{-0.5f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}, // 2 : LD
+		{{ 0.5f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}  // 3 : RD
 	};
 
 	// 頂点バッファ生成
@@ -53,23 +54,22 @@ void Billboard_Finalize()
 	Vertex_Buffer.Reset();
 }
 
-void Billboard_Draw(int Tex_ID, const DirectX::XMFLOAT3& POS,
-	float Scale_X, float Scale_Y, const DirectX::XMFLOAT2& Pivot)
+void Billboard_Draw_Internal(int Tex_ID, const XMFLOAT3& POS, float Scale_X, float Scale_Y,
+	const XMFLOAT2& Pivot, const UV_Parameter& uvParam)
 {
 	// Set UV
-	UV_Parameter UV = {};
-	UV.scale = { 0.2f, 0.5f };
-	UV.translation = { 0.2f * 3, 0.5f };
-	Shader_M->SetUVParameter(UV);
-	Shader_M->Begin_Billboard();
+	Shader_Manager::GetInstance()->SetUVParameter(uvParam);
+	Shader_Manager::GetInstance()->Begin_Billboard();
 
 	// Set Color
-	Shader_M->SetDiffuseColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+	Shader_Manager::GetInstance()->SetDiffuseColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
 	// Set Texture
-	ID3D11ShaderResourceView* SRV = Texture_M->Get_Shader_Resource_View(Tex_ID);
+	ID3D11ShaderResourceView* SRV = Texture_Manager::GetInstance()->Get_Shader_Resource_View(Tex_ID);
 	if (SRV)
+	{
 		Direct3D_GetContext()->PSSetShaderResources(0, 1, &SRV);
+	}
 
 	// Set Vertex Buffer
 	UINT stride = sizeof(Vertex_Billboard);
@@ -81,24 +81,48 @@ void Billboard_Draw(int Tex_ID, const DirectX::XMFLOAT3& POS,
 
 	// Set Offset
 	XMMATRIX Pivot_Offset = XMMatrixTranslation(-Pivot.x, -Pivot.y, 0.0f);
+	// Set Scale Matrix
+	XMMATRIX Scale = XMMatrixScaling(Scale_X, Scale_Y, 1.0f);
 
 	// Get Camera Rotation
-	XMFLOAT4X4 mtxCamera = PlayerCamera_GetViewMatrix();
-	mtxCamera._41 = mtxCamera._42 = mtxCamera._43 = 0.0f;
+	XMFLOAT4X4 view4x4 = PlayerCamera_GetViewMatrix();
+
+	// Remove Translation
+	view4x4._41 = 0.0f; view4x4._42 = 0.0f; view4x4._43 = 0.0f;
 
 	// Get Inverse_Matrix
-	XMMATRIX Inverse_mtx = XMMatrixTranspose(XMLoadFloat4x4(&mtxCamera));
+	XMMATRIX Inverse_mtx = XMMatrixTranspose(XMLoadFloat4x4(&view4x4));
 
 	// Get Scale And Translation
-	XMMATRIX Scale = XMMatrixScaling(Scale_X, Scale_Y, 1.0f);
-	XMMATRIX Trans = XMMatrixTranslation(POS.x + Pivot.x, POS.y + Pivot.y, POS.z);
+	XMMATRIX Trans = XMMatrixTranslation(POS.x, POS.y, POS.z);
 
 	// Get Final mtx
 	XMMATRIX mtxWorld = Pivot_Offset * Scale * Inverse_mtx * Trans;
 
 	// Set World mtx
-	Shader_M->SetWorldMatrix3D(mtxWorld);
+	Shader_Manager::GetInstance()->SetWorldMatrix3D(mtxWorld);
 
 	// Draw
 	Direct3D_GetContext()->Draw(NUM_VERTEX, 0);
+}
+
+void Billboard_Draw(int Tex_ID, const DirectX::XMFLOAT3& POS, float Scale_X, float Scale_Y, const DirectX::XMFLOAT2& Pivot)
+{
+	// Set UV
+	UV_Parameter UV = {};
+	UV.scale = { 1.0f, 1.0f };
+	UV.translation = { 0.0f, 0.0f };
+
+	Billboard_Draw_Internal(Tex_ID, POS, Scale_X, Scale_Y, Pivot, UV);
+}
+
+void Billboard_Draw_Animation(int PlayID, const DirectX::XMFLOAT3& POS, float Scale_X, float Scale_Y)
+{
+	int texID = -1;
+	UV_Parameter UV = {};
+
+	if (SpriteAni_Get_Current_UV(PlayID, texID, UV.scale, UV.translation))
+	{
+		Billboard_Draw_Internal(texID, POS, Scale_X, Scale_Y, { 0.5f, 0.5f }, UV);
+	}
 }

@@ -19,6 +19,8 @@ void SpriteAni_Draw(int PlayID, float dx, float dy, float dw, float dh,
 int SpriteAni_Get_Pattern_Info(int TexID, int PMax, int HPatternMax,
 	double PatternPlayTime, const DirectX::XMUINT2& PSize,
 	const DirectX::XMUINT2& SPosition, bool Is_Loop);
+bool SpriteAni_Get_Current_UV(int PlayID, int& outTexID,
+	DirectX::XMFLOAT2& outScale, DirectX::XMFLOAT2& outTrans);
 
 int SpriteAni_CreatePlayer(int AniPatternID);
 

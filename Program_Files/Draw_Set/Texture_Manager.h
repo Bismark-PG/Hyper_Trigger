@@ -56,6 +56,4 @@ private:
 	std::unordered_map<std::string, int> m_TextureList;
 };
 
-extern Texture_Manager* Texture_M;
-
 #endif // TEXTURE_H

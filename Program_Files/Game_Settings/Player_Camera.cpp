@@ -92,7 +92,7 @@ void Player_Camera_Update(double elapsed_time)
     // Make View Matrix
     XMMATRIX mtxView = XMMatrixLookAtLH(finalCameraPos, finalTargetPos, { 0.0f,1.0f,0.0f });
     XMStoreFloat4x4(&Camera_View_mtx, mtxView);
-    Shader_M->SetViewMatrix3D(mtxView);
+    Shader_Manager::GetInstance()->SetViewMatrix3D(mtxView);
     XMStoreFloat3(&Current_Camera_Pos, finalCameraPos);
 
     // Get Camera Front Vector
@@ -103,7 +103,7 @@ void Player_Camera_Update(double elapsed_time)
 	float Ratio = static_cast<float>(Direct3D_GetBackBufferWidth()) / Direct3D_GetBackBufferHeight();
 	XMMATRIX mtxPerspective = XMMatrixPerspectiveFovLH(Camera_FOV, Ratio, Camera_Near_Z, Camera_Far_z);
 
-	Shader_M->SetProjectionMatrix3D(mtxPerspective);
+    Shader_Manager::GetInstance()->SetProjectionMatrix3D(mtxPerspective);
 }
 
 const XMFLOAT3& Player_Camera_Get_POS()
@@ -134,6 +134,24 @@ Player_Sights Player_Camera_Get_Now_Sights()
     return Current_Sights;
 }
 
+void Player_Camera_Set_Sights(Player_Sights sight)
+{
+    Current_Sights = sight;
+
+    switch (Current_Sights)
+    {
+    case Player_Sights::Left:
+        Camera_Sights_Offset = -1.5f;
+        break;
+    case Player_Sights::Middle:
+        Camera_Sights_Offset = 0.0f;
+        break;
+    case Player_Sights::Right:
+        Camera_Sights_Offset = 1.5f;
+        break;
+    }
+}
+
 void Player_Camera_Update_Sights()
 {
     Camera_Sights_Offset *= -1.0f;
@@ -142,33 +160,6 @@ void Player_Camera_Update_Sights()
         Current_Sights = Player_Sights::Left;
     else if (Camera_Sights_Offset < 0.0f)
         Current_Sights = Player_Sights::Right;
-
-#if defined(DEBUG) || defined(_DEBUG)
-    bool Debugging = false;
-    string s = {};
-
-    if (Debugging)
-    {
-        Current_Sights = Player_Sights::Left;
-
-        switch (Current_Sights)
-        {
-        case Player_Sights::Left:
-            Camera_Sights_Offset = -1.5f;
-            s = "Left";
-            break;
-        case Player_Sights::Middle:
-            Camera_Sights_Offset = 0.0f;
-            s = "Middle";
-            break;
-        case Player_Sights::Right:
-            Camera_Sights_Offset = 1.5f;
-            s = "Right";
-            break;
-        }
-    }
-    Debug::D_Out << "Now Sights : " << s << std::endl;
-#endif
 }
 
 void Player_Camera_Change_Sights()

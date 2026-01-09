@@ -25,6 +25,7 @@ Shader_Manager* Shader_Manager::GetInstance()
 
 bool Shader_Manager::Init(ID3D11Device* device, ID3D11DeviceContext* context)
 {
+    // Force set device/context
     m_device = device;
     m_context = context;
 
@@ -125,10 +126,50 @@ bool Shader_Manager::Init(ID3D11Device* device, ID3D11DeviceContext* context)
     bd.CPUAccessFlags = 0;
     bd.ByteWidth = sizeof(UV_Parameter);
 
+    // --- Create Blend Render ---
+    D3D11_BLEND_DESC blendDesc = {};
+    blendDesc.AlphaToCoverageEnable = FALSE;
+    blendDesc.IndependentBlendEnable = FALSE;
+    blendDesc.RenderTarget[0].BlendEnable = TRUE;
+    blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+    blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+    blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+    blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
     HRESULT hr = m_device->CreateBuffer(&bd, nullptr, m_cbBillboardUV.GetAddressOf());
     if (FAILED(hr))
     {
+#if defined(DEBUG) || defined(_DEBUG)
         MessageBox(nullptr, "Failed to create UV constant buffer.", "Error", MB_OK);
+#else
+        MessageBox(nullptr, L"Failed to create UV constant buffer.", L"Error", MB_OK);
+#endif
+        return false;
+    }
+
+    hr = m_device->CreateBlendState(&blendDesc, m_BlendStateAlpha.GetAddressOf());
+    if (FAILED(hr))
+    {
+#if defined(DEBUG) || defined(_DEBUG)
+        MessageBox(nullptr, "Failed to create Alpha Blend State", "Error", MB_OK);
+#else
+        MessageBox(nullptr, L"Failed to create Alpha Blend State", L"Error", MB_OK);
+#endif
+        return false;
+    }
+
+    blendDesc.RenderTarget[0].BlendEnable = FALSE;
+    hr = m_device->CreateBlendState(&blendDesc, m_BlendStateOpaque.GetAddressOf());
+    if (FAILED(hr))
+    {
+#if defined(DEBUG) || defined(_DEBUG)
+        MessageBox(nullptr, "Failed to create Opaque Blend State", "Error", MB_OK);
+#else
+        MessageBox(nullptr, L"Failed to create Opaque Blend State", L"Error", MB_OK);
+#endif
         return false;
     }
 
@@ -137,6 +178,22 @@ bool Shader_Manager::Init(ID3D11Device* device, ID3D11DeviceContext* context)
 
 void Shader_Manager::Final()
 {
+	// Use Comptrs For Auto, so just reset
+    m_device = nullptr;
+    m_context = nullptr;
+}
+
+void Shader_Manager::SetAlphaBlend(bool enable)
+{
+    float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    if (enable)
+    {
+        m_context->OMSetBlendState(m_BlendStateAlpha.Get(), blendFactor, 0xffffffff);
+    }
+    else
+    {
+        m_context->OMSetBlendState(m_BlendStateOpaque.Get(), blendFactor, 0xffffffff);
+    }
 }
 
 // --- 2D Methods ---
@@ -163,6 +220,8 @@ void Shader_Manager::Begin2D(Shader_Filter Filter)
         m_context->PSSetSamplers(0, 1, m_sampler_AnisoTropic.GetAddressOf());
         break;
     }
+
+    SetAlphaBlend(true);
 }
 
 void Shader_Manager::SetProjectionMatrix2D(const XMMATRIX& matrix)
@@ -226,6 +285,8 @@ void Shader_Manager::Begin3D(Shader_Filter Filter)
         m_context->PSSetSamplers(0, 1, m_sampler_AnisoTropic.GetAddressOf());
         break;
     }
+
+    SetAlphaBlend(false);
 }
 
 void Shader_Manager::Begin3D_For_Field(Shader_Filter Filter)

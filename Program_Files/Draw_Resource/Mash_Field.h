@@ -16,5 +16,9 @@ void Mash_Field_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 void Mash_Field_Finalize(void);
 
 void Mash_Field_Draw();
+float Mash_Field_Get_Height(float x, float z);
+
+float Mash_Field_Get_Size_X();
+float Mash_Field_Get_Size_Z();
 
 #endif // MASH_FIELD_H

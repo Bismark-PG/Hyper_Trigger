@@ -77,7 +77,7 @@ void Grid_Finalize(void)
 void Grid_Draw(void)
 {
 	// シェーダーを描画パイプラインに設定
-	Shader_M->Begin3D(Shader_Filter::MAG_MIP_POINT);
+	Shader_Manager::GetInstance()->Begin3D(Shader_Filter::MAG_MIP_POINT);
 
 	// 頂点バッファを描画パイプラインに設定
 	UINT stride = sizeof(Vertex3D);
@@ -88,7 +88,7 @@ void Grid_Draw(void)
 	XMMATRIX mtxWorld = XMMatrixIdentity(); //単位行列の作成
 
 	// 頂点シェーダーに座標変換行列を設定
-	Shader_M->SetWorldMatrix3D(mtxWorld);
+	Shader_Manager::GetInstance()->SetWorldMatrix3D(mtxWorld);
 
 	// プリミティブトポロジ設定
 	g_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
